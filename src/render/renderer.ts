@@ -5,7 +5,7 @@ import { hudModel } from '../sim/views';
 import type { World } from '../sim/world';
 import { Camera } from './camera';
 import { withAlpha } from './color';
-import { drawDebugText, drawGeometry, type FrameStats } from './debug';
+import { drawCreatureDebug, drawDebugText, drawGeometry, type FrameStats } from './debug';
 import { GlowBatch } from './glow';
 import { drawHud } from './hud';
 import { drawBeacon } from './layers/beacon';
@@ -172,6 +172,7 @@ export class Renderer {
     drawBeacon(view, world, this.lastPing);
     drawProbe(view, world, hud);
     drawImplosion(view, this.effects);
+    if (flags.debug) drawCreatureDebug(view, world);
     drawEffects(ctx, this.w, this.h, world, this.effects, view.time);
     if (flags.hud) drawHud(ctx, this.w, this.h, hud, world, view.time - this.energyDenied, this.controlsKeys);
   }

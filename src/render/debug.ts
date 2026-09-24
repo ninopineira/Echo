@@ -34,6 +34,43 @@ export function drawGeometry(v: View, world: World, strong: boolean): void {
   ctx.stroke(door);
 }
 
+/**
+ * F1 : créatures (position réelle, cercle d'écoute à l'intensité d'une impulsion courte,
+ * cible de déplacement, origine du dernier bruit) et bruits récents.
+ */
+export function drawCreatureDebug(v: View, world: World): void {
+  const { ctx } = v;
+  ctx.save();
+  ctx.lineWidth = 1;
+  for (const c of world.state.creatures) {
+    const x = sx(v, c.pos.x);
+    const y = sy(v, c.pos.y);
+    ctx.strokeStyle = withAlpha(PALETTE.creatureRim, 0.9);
+    ctx.beginPath();
+    ctx.arc(x, y, (c.kind === 'guetteur' ? world.tuning.guetteur.radius : world.tuning.leviathan.radius) * v.scale, 0, Math.PI * 2);
+    ctx.stroke();
+    if (c.kind !== 'guetteur') continue;
+    ctx.setLineDash([4, 6]);
+    ctx.strokeStyle = withAlpha(PALETTE.creatureRim, 0.35);
+    ctx.beginPath();
+    ctx.arc(x, y, world.tuning.guetteur.hearingRadius * v.scale, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    if (c.target) {
+      ctx.strokeStyle = withAlpha(PALETTE.hazard, 0.7);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(sx(v, c.target.x), sy(v, c.target.y));
+      ctx.stroke();
+    }
+    if (c.noiseOrigin) {
+      ctx.fillStyle = withAlpha(PALETTE.hazard, 0.8);
+      ctx.fillRect(sx(v, c.noiseOrigin.x) - 3, sy(v, c.noiseOrigin.y) - 3, 6, 6);
+    }
+  }
+  ctx.restore();
+}
+
 /** Overlay texte F1 : mesures et journal d'événements. */
 export function drawDebugText(
   ctx: CanvasRenderingContext2D,

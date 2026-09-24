@@ -100,13 +100,13 @@ Jouable : niveaux 1 à 4.
 
 Jouable : niveaux 1 à 5. Le Guetteur erre, entend, fonce vers l'origine du bruit, fouille et blesse.
 
-- [ ] `sim/nav.ts` (Dijkstra, profils son et nage, cache, version des portes) et tests
-- [ ] `systems/noise.ts` (écoute par distance de chemin) ; bruits des impulsions et des chocs ; événement `noise`
-- [ ] `systems/guetteur.ts` : errance, alerte, chasse, fouille, retrait, cliquetis, contact ; tests (pas d'écoute à travers la roche, cible = origine du bruit, déterminisme)
-- [ ] Rendu : image rémanente figée (silhouette et liseré) ; overlay F1 avec états, cibles et cercles d'écoute
-- [ ] Sons : écho de créature, cliquetis de proximité, grognement d'alerte positionné, tension de chasse
-- [ ] Validation : E12, W05
-- [ ] Niveau 5 `le-guetteur`
+- [x] `sim/nav.ts` (Dijkstra, profils son et nage, cache, version des portes) et tests
+- [x] `systems/noise.ts` (écoute par distance de chemin) ; bruits des impulsions et des chocs ; événement `noise`
+- [x] `systems/guetteur.ts` : errance, alerte, chasse, fouille, retrait, cliquetis, contact ; tests (pas d'écoute à travers la roche, cible = origine du bruit, déterminisme)
+- [x] Rendu : image rémanente figée (silhouette et liseré) ; overlay F1 avec états, cibles et cercles d'écoute
+- [x] Sons : écho de créature, cliquetis de proximité, grognement d'alerte positionné, tension de chasse
+- [x] Validation : E12, W05
+- [x] Niveau 5 `le-guetteur`
 
 ## M7 — Leurres (niveau 6)
 
