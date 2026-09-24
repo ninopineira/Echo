@@ -17,18 +17,18 @@ On travaille dans l'ordre et on coche une case quand le code, ses tests et la do
 
 Jouable : `npm run dev` ouvre le niveau 1 dans le noir. La sonde nage avec inertie et glisse le long des parois (F2 affiche la carte).
 
-- [ ] `sim/math` (vecteurs, segments, intersections rayon/segment et cercle/segment) et `sim/rng.ts`
-- [ ] `sim/tuning.ts` : `mergeTuning` (fusion profonde et typée) et ses tests
-- [ ] `sim/level/parse.ts` : légende complète (LEVEL_FORMAT § 3), erreurs positionnées, tests (indentation, `\r\n`, portes et leviers)
-- [ ] `sim/level/contour.ts` et `compile.ts` : marching squares, index spatial, rectangles de porte, masques vase et courant, tests de contour
-- [ ] `sim/world.ts` (création, clonage, instantané et restauration), `sim/step.ts` (squelette ordonné, `STEP`), `sim/events.ts`, `sim/input.ts`
-- [ ] `systems/probe.ts` : poussée, frottement, collisions, glissement, choc (événement et bruit en attente), tests
-- [ ] `sim/validate/` : E01–E07, E11, W01, W02, suggestion de par, rapport texte ; `scripts/validate-levels.ts` avec `--verbose` ; `src/sim/levels.test.ts`
-- [ ] Niveau `01-premier-echo.ts` (première version), catalogue, entrée `LEVELS`
-- [ ] `app/loop.ts` (accumulateur pur et tests), `app/session.ts`, `main.ts` réel, `app/debug.ts` (`?level`, `?reveal`, `?debug`, F1, F2, `window.__echo`)
-- [ ] `input/keyboard.ts` et `bindings.ts` (codes physiques, flèches, perte de focus, `preventDefault`) et tests
-- [ ] `render/renderer.ts` (DPR, redimensionnement), `camera.ts`, fond, sonde (goutte orientée), overlay F1 (segments, images par seconde, temps), révélation F2
-- [ ] HMR : modifier `tuning.ts` ou un niveau relance le niveau en cours
+- [x] `sim/math` (vecteurs, segments, intersections rayon/segment et cercle/segment) et `sim/rng.ts`
+- [x] `sim/tuning.ts` : `mergeTuning` (fusion profonde et typée) et ses tests
+- [x] `sim/level/parse.ts` : légende complète (LEVEL_FORMAT § 3), erreurs positionnées, tests (indentation, `\r\n`, portes et leviers)
+- [x] `sim/level/contour.ts` et `compile.ts` : marching squares, index spatial, rectangles de porte, masques vase et courant, tests de contour
+- [x] `sim/world.ts` (création, clonage, instantané et restauration), `sim/step.ts` (squelette ordonné, `STEP`), `sim/events.ts`, `sim/input.ts`
+- [x] `systems/probe.ts` : poussée, frottement, collisions, glissement, choc (événement et bruit en attente), tests
+- [x] `sim/validate/` : E01–E07, E11, W01, W02, suggestion de par, rapport texte ; `scripts/validate-levels.ts` avec `--verbose` ; `src/sim/levels.test.ts`
+- [x] Niveau `01-premier-echo.ts` (première version), catalogue, entrée `LEVELS`
+- [x] `app/loop.ts` (accumulateur pur et tests), `app/session.ts`, `main.ts` réel, `app/debug.ts` (`?level`, `?reveal`, `?debug`, F1, F2, `window.__echo`)
+- [x] `input/keyboard.ts` et `bindings.ts` (codes physiques, flèches, perte de focus, `preventDefault`) et tests
+- [x] `render/renderer.ts` (DPR, redimensionnement), `camera.ts`, fond, sonde (goutte orientée), overlay F1 (segments, images par seconde, temps), révélation F2
+- [x] HMR : modifier `tuning.ts` ou un niveau relance le niveau en cours
 
 En parallèle, dès que le parseur et le validateur sont en place : `level-designer` ébauche les niveaux 2 à 10 d'après leurs fiches du GDD. Les éléments non simulés restent inertes et ces ébauches seront reprises à chaque jalon.
 

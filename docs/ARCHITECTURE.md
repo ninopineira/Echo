@@ -41,7 +41,7 @@ src/
     math/vec.ts, math/geom.ts   vecteurs, segments, intersections rayon/segment et cercle/segment
     rng.ts                RNG à graine (mulberry32), état stocké dans WorldState
     tuning.ts             mergeTuning(TUNING, overrides) → Tuning
-    input.ts              type InputFrame (produit par input/, consommé ici)
+    inputFrame.ts         type InputFrame (produit par input/, consommé ici)
     events.ts             union GameEvent (contrat pour audio/, render/, app/)
     level/parse.ts        LevelSource → ParsedLevel | ParseError[]
     level/contour.ts      marching squares → segments de roche
@@ -125,37 +125,43 @@ interface World {
   readonly options: SimOptions;       // { afterglowMultiplier, god }
   state: WorldState;                  // données simples et clonables, mutées en place
   stats: RunStats;                    // { time, pulses, deaths } — jamais restauré
-  checkpoint: WorldState | null;      // instantané du dernier point de contrôle (ou du départ)
+  checkpoint: WorldState;             // instantané de reprise : départ, puis dernier point de contrôle
+  checkpointActive: boolean;          // un point de contrôle a été activé
   events: GameEvent[];                // vidé par l'app après distribution
+  time: number; tick: number;         // horloge monotone, jamais restaurée
+  nextId: number;                     // identifiants d'impulsions et de leurres, jamais restauré
+  navCache: Map<string, Float32Array>; // champs de distance mis en cache
 }
 
 interface WorldState {
-  tick: number; time: number; rng: number;
-  status: 'playing' | 'dying' | 'complete';
-  probe: { pos: Vec2; prevPos: Vec2; vel: Vec2; facing: Vec2; hull: number; invulnUntil: number;
-           lures: number; energy: number; chargeStart: number | null; cooldownUntil: number;
-           lastPulseKind: PulseKind | null };
+  rng: number;
+  status: 'playing' | 'dying' | 'complete'; statusTimer: number;
+  probe: { pos: Vec2; prev: Vec2; vel: Vec2; facing: Vec2; hull: number; invuln: number;
+           lures: number; energy: number; charge: number; cooldown: number; cooldownMax: number;
+           bumpCooldown: number };
   pulses: Pulse[]; reveals: Reveal[];
-  pearls: { pos: Vec2; taken: boolean }[];
-  capsules: { pos: Vec2; taken: boolean }[];
+  pearls: { x: number; y: number; taken: boolean }[];
+  capsules: { x: number; y: number; taken: boolean }[];
   lures: LureBody[];
-  levers: { letter: string; pos: Vec2; pulled: boolean }[];
-  doors: { letter: string; progress: number }[];      // 0 fermée → 1 ouverte
-  checkpoints: { pos: Vec2; active: boolean }[];
+  levers: { letter: string; x: number; y: number; pulled: boolean }[];
+  doors: { letter: string; progress: number; opening: boolean }[];   // 0 fermée → 1 ouverte
+  checkpoints: { x: number; y: number; active: boolean }[];
   creatures: Creature[];                              // union discriminée guetteur | leviathan
-  beaconNextPing: number;
+  beaconTimer: number;
+  doorsVersion: number;                               // invalide le cache de navigation
   pendingNoises: Noise[];                             // bruits du pas en cours
 }
 ```
 
 - `Vec2` est `{ x: number; y: number }`. Les positions sont en cases (unités monde).
-- Les corps mobiles (sonde, créatures, leurres) gardent `prevPos`, mis à jour au début de chaque pas, pour l'interpolation du rendu.
+- Les corps mobiles (sonde, créatures, leurres) gardent `prev`, mis à jour au début de chaque pas, pour l'interpolation du rendu.
+- **Minuteries en comptes à rebours** (`invuln`, `cooldown`, `charge`, `beaconTimer`, minuteries des créatures) : l'état ne contient aucun temps absolu, si bien qu'un instantané restauré reste cohérent. Seules les impulsions et révélations (vidées à la restauration) portent des temps absolus, pris sur `world.time`.
 - `createWorld(level, tuning, levelTuning, options, seed)` construit l'état initial, et `checkpoint` reçoit l'instantané du départ.
-- L'instantané est une copie profonde de `WorldState` par une fonction de clonage écrite à la main (`structuredClone` est interdit dans `sim`). `pulses`, `reveals`, `lures` en vol et `pendingNoises` sont vidés à la restauration.
+- L'instantané (`snapshotState`) est une copie profonde de `WorldState` par une fonction de clonage écrite à la main (`structuredClone` est interdit dans `sim`). `pulses`, `reveals`, `lures` en vol et `pendingNoises` sont vidés.
 
 ### 4.2 Ordre d'un pas (`stepWorld`)
 
-1. `tick++`, `time += STEP`, sauvegarde des `prevPos`.
+1. `tick++`, `time += STEP` (sur `World`), sauvegarde des `prev`.
 2. Si `status !== 'playing'`, on gère seulement l'animation de mort ou de fin, puis on sort.
 3. **Entrées** : machine de charge de l'impulsion (émission courte ou longue, refus), lancer de leurre.
 4. **Énergie** : recharge.
@@ -170,7 +176,7 @@ interface WorldState {
 13. **Balise** : émission périodique.
 14. **Cycle de vie** : balise atteinte (`complete`), coque à zéro (`dying`, puis restauration de `checkpoint` et événement `respawn`).
 
-Le pas de temps `STEP = 1/120` s est une constante technique exportée par `sim/step.ts` et importée par `app/loop.ts`. Ce n'est pas une valeur d'équilibrage.
+Le pas de temps `STEP = 1/120` s est une constante technique définie dans `sim/step-constants.ts`, réexportée par `sim/step.ts` et importée par `app/loop.ts`. Ce n'est pas une valeur d'équilibrage.
 
 ### 4.3 Événements (`sim/events.ts`)
 

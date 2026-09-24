@@ -25,6 +25,8 @@ export const TUNING = {
     bumpMinSpeed: 1.5,
     /** Bruit d'un choc à pleine vitesse (loudness). */
     bumpLoudnessMax: 0.4,
+    /** Délai minimal entre deux chocs sonores (évite la rafale en frottant un coin). */
+    bumpCooldown: 0.25,
     /** Rayon de l'arc de paroi révélé au point de choc (0 = désactivé). */
     bumpRevealRadius: 1.2,
     /** Rémanence de cet arc. */
@@ -204,21 +206,15 @@ export interface LevelTuning {
  */
 export const LEVELS: Record<string, LevelTuning> = {
   'premier-echo': { par: 10, beaconInterval: 2 },
-  meandres: { par: 9, beaconInterval: 3 },
-  oursins: { par: 10, beaconInterval: 3.5 },
-  courants: { par: 11, beaconInterval: 4 },
-  'le-guetteur': {
-    par: 10,
-    beaconInterval: 4,
-    overrides: { guetteur: { hearingRadius: 8, huntSpeed: 3.2 } },
-  },
-  leurres: { par: 11, beaconInterval: 4.5 },
-  vannes: { par: 16, beaconInterval: 5 },
-  vase: { par: 14, beaconInterval: 5.5, overrides: { guetteur: { huntSpeed: 3.8 } } },
-  'batterie-faible': {
-    par: 15,
-    beaconInterval: 6,
-    overrides: { energy: { enabled: true }, guetteur: { hearingRadius: 10, huntSpeed: 3.9 } },
-  },
-  leviathan: { par: 12, beaconInterval: 3, overrides: { energy: { enabled: true, regen: 6 } } },
+  // Valeurs prévues par le GDD § 7.2, à activer (décommenter) avec leur niveau : une entrée
+  // sans niveau dans le catalogue est une erreur E06.
+  // meandres: { par: 9, beaconInterval: 3 },
+  // oursins: { par: 10, beaconInterval: 3.5 },
+  // courants: { par: 11, beaconInterval: 4 },
+  // 'le-guetteur': { par: 10, beaconInterval: 4, overrides: { guetteur: { hearingRadius: 8, huntSpeed: 3.2 } } },
+  // leurres: { par: 11, beaconInterval: 4.5 },
+  // vannes: { par: 16, beaconInterval: 5 },
+  // vase: { par: 14, beaconInterval: 5.5, overrides: { guetteur: { huntSpeed: 3.8 } } },
+  // 'batterie-faible': { par: 15, beaconInterval: 6, overrides: { energy: { enabled: true }, guetteur: { hearingRadius: 10, huntSpeed: 3.9 } } },
+  // leviathan: { par: 12, beaconInterval: 3, overrides: { energy: { enabled: true, regen: 6 } } },
 };

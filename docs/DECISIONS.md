@@ -38,6 +38,10 @@ Une ligne de décision, une ligne de justification. On ajoute les nouvelles déc
 | D30 | Docs et commentaires en français, identifiants en anglais, textes d'UI centralisés dans `ui/strings.ts` | L'auteur maintient en français, et le code reste idiomatique. |
 | D31 | Fins de ligne LF imposées (`.gitattributes`, `.editorconfig`), parseur tolérant au `\r\n` | Les grilles sont analysées ligne à ligne sous Windows. |
 | D32 | Skill `frontend-design` (Anthropic) installé au niveau du projet ; `game-audio` (skills.sh) écarté | Le premier colle aux interdits du brief pour les menus ; le second suppose JavaScript, un EventBus et Phaser. |
+| D33 | Horloge (`time`, `tick`, `nextId`) portée par `World`, jamais restaurée ; minuteries de l'état en comptes à rebours | Une reprise au point de contrôle ne fait pas reculer le temps, et les identifiants d'impulsion restent uniques pour les caches de rendu. |
+| D34 | `STEP` défini dans `sim/step-constants.ts` et réexporté par `sim/step.ts` | Évite l'import circulaire entre `step.ts` et les systèmes. |
+| D35 | Type `InputFrame` dans `sim/inputFrame.ts` (et non `sim/input.ts`) | Un fichier nommé comme une couche serait rejeté par la règle d'import ESLint. |
+| D36 | `LEVELS` ne contient que les niveaux du catalogue ; les valeurs prévues des autres restent en commentaire jusqu'à leur création | Une entrée sans niveau est une erreur E06 du validateur. |
 
 ## Choix de conception tranchés
 
