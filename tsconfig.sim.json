@@ -1,0 +1,10 @@
+{
+  "//": "Garde-fou : la simulation, les données et la sauvegarde doivent compiler sans DOM ni Node.",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": []
+  },
+  "include": ["src/sim", "src/data", "src/save"],
+  "exclude": ["src/**/*.test.ts"]
+}

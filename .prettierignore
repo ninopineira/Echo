@@ -1,0 +1,7 @@
+dist/
+coverage/
+node_modules/
+.claude/
+package-lock.json
+skills-lock.json
+*.md
