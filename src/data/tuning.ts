@@ -212,8 +212,8 @@ export const LEVELS: Record<string, LevelTuning> = {
   // sans niveau dans le catalogue est une erreur E06.
   meandres: { par: 9, beaconInterval: 3 },
   oursins: { par: 11, beaconInterval: 3.5 },
-  // courants: { par: 11, beaconInterval: 4 },
-  // 'le-guetteur': { par: 10, beaconInterval: 4, overrides: { guetteur: { hearingRadius: 8, huntSpeed: 3.2 } } },
+  courants: { par: 11, beaconInterval: 4 },
+  // 'le-guetteur': { par: 12, beaconInterval: 4, overrides: { guetteur: { hearingRadius: 8, huntSpeed: 3.2 } } },
   // leurres: { par: 11, beaconInterval: 4.5 },
   // vannes: { par: 16, beaconInterval: 5 },
   // vase: { par: 14, beaconInterval: 5.5, overrides: { guetteur: { huntSpeed: 3.8 } } },
