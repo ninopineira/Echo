@@ -1,10 +1,15 @@
 import { PALETTE } from '../../data/palette';
+import { TAU } from '../../sim/math/vec';
+import type { HudModel } from '../../sim/views';
 import type { World } from '../../sim/world';
 import { withAlpha } from '../color';
 import { lerpPos, sx, sy, type View } from '../view';
 
-/** Sonde : goutte blanc bleuté orientée, halo doux, clignotement d'invulnérabilité. */
-export function drawProbe(v: View, world: World): void {
+/**
+ * Sonde : goutte blanc bleuté orientée, halo doux, clignotement d'invulnérabilité,
+ * anneau de charge de l'impulsion longue et arc de recharge, directement dans la scène.
+ */
+export function drawProbe(v: View, world: World, hud: HudModel): void {
   const { ctx } = v;
   const p = world.state.probe;
   if (world.state.status === 'dying') return;
@@ -30,4 +35,21 @@ export function drawProbe(v: View, world: World): void {
   ctx.fillStyle = withAlpha(PALETTE.probe, blink ? 0.35 : 1);
   ctx.fill();
   ctx.restore();
+
+  const ring = r * 2.4;
+  ctx.lineCap = 'round';
+  if (hud.cooldown01 > 0) {
+    ctx.lineWidth = Math.max(1.5, v.scale / 34);
+    ctx.strokeStyle = withAlpha(PALETTE.sonar, 0.28);
+    ctx.beginPath();
+    ctx.arc(x, y, ring, -Math.PI / 2, -Math.PI / 2 + TAU * hud.cooldown01);
+    ctx.stroke();
+  }
+  if (hud.charge01 !== null) {
+    ctx.lineWidth = Math.max(2, v.scale / 22);
+    ctx.strokeStyle = withAlpha(PALETTE.sonar, 0.35 + 0.55 * hud.charge01);
+    ctx.beginPath();
+    ctx.arc(x, y, ring + 3, -Math.PI / 2, -Math.PI / 2 + TAU * hud.charge01);
+    ctx.stroke();
+  }
 }

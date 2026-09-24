@@ -30,30 +30,36 @@ Stack : TypeScript strict (6.0.x), Vite 8, Vitest 5, Canvas 2D, Web Audio, DOM e
 
 ```
 src/
-  main.ts                 amorçage : crée canvas, UI, entrées, audio, sauvegarde, App ; charge la police
+  main.ts                 amorçage : police, couches, sauvegarde, App ; ?soundboard=1 monte la table d'écoute
   app/                    orchestration — seule couche qui connaît toutes les autres
-    app.ts                contrôleur : écrans, session, options, sauvegarde
+    app.ts                contrôleur : écrans, session, sauvegarde, options, fin de niveau
     flow.ts               machine d'états des écrans (pure, testée)
-    session.ts            GameSession : World + boucle rAF + distribution des événements
+    session.ts            GameSession : World + accumulateur, buildWorld
     loop.ts               accumulateur à pas fixe (pur, testé)
-    debug.ts              paramètres d'URL, touches F1–F4, window.__echo, HMR de tuning et niveaux
+    data.ts               données courantes (catalogue, tuning) remplacées à chaud par le HMR
+    debug.ts              paramètres d'URL, touches F1–F4, window.__echo
   sim/                    logique de jeu pure : ni DOM, ni horloge, ni hasard externe
     math/vec.ts, math/geom.ts   vecteurs, segments, intersections rayon/segment et cercle/segment
-    rng.ts                RNG à graine (mulberry32), état stocké dans WorldState
+    rng.ts                RNG à graine (mulberry32), état stocké dans WorldState ; hash01 sans état
     tuning.ts             mergeTuning(TUNING, overrides) → Tuning
     inputFrame.ts         type InputFrame (produit par input/, consommé ici)
     events.ts             union GameEvent (contrat pour audio/, render/, app/)
+    level/types.ts        ParsedLevel, CompiledLevel, Cell
     level/parse.ts        LevelSource → ParsedLevel | ParseError[]
     level/contour.ts      marching squares → segments de roche
-    level/compile.ts      ParsedLevel → CompiledLevel (segments, index spatial, portes, masques)
-    world.ts              types World/WorldState, createWorld, snapshot/restore
+    level/compile.ts      ParsedLevel → CompiledLevel (segments, index spatial, portes)
+    world.ts              types World/WorldState, createWorld, snapshotState
+    step-constants.ts     STEP (1/120 s)
     step.ts               stepWorld : appelle les systèmes dans l'ordre (§ 4.2)
-    nav.ts                champs de distance (Dijkstra sur grille) avec cache
-    systems/              probe, pulse, echoes, noise, pickups, doors, lures, hazards,
-                          currents, energy, beacon, guetteur, leviathan, lifecycle
+    nav.ts                champs de distance (Dijkstra sur grille, calcul en double précision)
+    systems/              collision, probe, pulse, rays, revealables, echoes, noise, navigation,
+                          pickups (perles, capsules, leviers, points de contrôle), doors, lures,
+                          hazards, energy, beacon, creatures (Guetteur, Léviathan), lifecycle
     scoring.ts            étoiles et RunResult
     views.ts              hudModel(world), ambientModel(world) : vues dérivées pures
-    validate/             règles de validation des niveaux (LEVEL_FORMAT § 6), rapport texte
+    validate/             règles de validation des niveaux (LEVEL_FORMAT § 6), atteignabilité, rapport texte
+    fixtures.ts           mondes de test depuis une grille ASCII (tests seulement)
+    autopilot.ts          pilote automatique de test : termine un niveau avec la vraie physique
   data/                   données pures, ne dépendent de rien
     tuning.ts             TOUTES les valeurs d'équilibrage + LEVELS (par niveau)
     palette.ts            couleurs
@@ -61,29 +67,36 @@ src/
     levels/index.ts       LEVEL_CATALOG ordonné (imports statiques)
     levels/NN-slug.ts     un fichier par niveau
   render/                 Canvas 2D, lit le monde sans jamais le modifier
-    renderer.ts           canvas, DPR, redimensionnement, ordre des calques
+    renderer.ts           canvas, DPR, redimensionnement, ordre des calques, effets pilotés par événements
     camera.ts             suivi amorti, tremblement, monde ↔ écran
-    afterglow.ts          courbes d'éclat et d'effacement (pur, testé)
-    glow.ts               tracés lumineux par lots (3 passes additives)
-    layers/               walls, ring, entities, beacon, probe, effects
-    hud.ts                HUD à partir de HudModel
-    debug.ts              overlay F1
+    view.ts, color.ts     contexte de frame, conversions de couleurs
+    afterglow.ts          courbe d'éclat et d'effacement (pure, testée)
+    glow.ts               tracés lumineux par paliers (3 passes additives)
+    layers/               walls (parois et fronts), entities (images rémanentes), beacon, signals
+                          (pings de leurre, points de contrôle actifs), probe, effects
+    hud.ts                HUD à partir de HudModel (ses libellés vivent ici : render n'importe pas ui/)
+    title.ts              fond animé de l'écran titre
+    debug.ts              overlay F1, géométrie F2
   audio/                  Web Audio, réagit aux événements
+    audio.ts              createAudioSystem() : l'API utilisée par l'app
     engine.ts             AudioContext, déblocage, bus, limiteur, réverbération générée
-    mix.ts                constantes de mixage (volumes, portées, filtres) — hors tuning.ts
-    spatial.ts            pan / gain / brillance selon la position (pur, testé)
     director.ts           GameEvent → sons ; AmbientModel → sons continus ; limite de voix
-    sfx/                  recettes de synthèse, une par famille de sons
-    soundboard.ts         page d'écoute ?soundboard=1 (dev)
+    mix.ts                constantes de mixage (volumes, portées, filtres) — hors tuning.ts
+    spatial.ts, curves.ts, noise.ts, voices.ts   fonctions pures testées (spatialisation, courbes, bruits, voix)
+    sfx/                  recettes de synthèse par famille (pulse, echo, probe, pickups, creature, lure,
+                          doors, menu, ambience, continuous…)
+    soundboard.ts         table d'écoute ?soundboard=1 (dev)
   input/                  clavier → InputFrame
     keyboard.ts           états et fronts de touches, perte de focus, preventDefault
     bindings.ts           KeyboardEvent.code → action (pur, testé)
-    layout.ts             libellés des touches selon la disposition (getLayoutMap si dispo)
+    layout.ts             lettres réelles des touches de nage (getLayoutMap si dispo)
   ui/                     écrans DOM
+    types.ts              contrat ScreenModel / UiCallbacks / Ui (source de vérité)
     ui.ts                 createUi(root, callbacks) → { show(model) }
     screens/              title, levelSelect, pause, levelEnd, victory, options
-    dom.ts, focus.ts      mini-helper de création d'éléments, navigation clavier
-    strings.ts            tous les textes (français)
+    screen.ts, dom.ts, focus.ts   aides communes, création d'éléments, navigation clavier
+    strings.ts            tous les textes des écrans (français)
+    format.ts, icons.ts   formatage (temps, fractions), icônes SVG en ligne
     theme.ts              palette → variables CSS
     base.css, styles.css
   save/
@@ -305,28 +318,7 @@ interface InputFrame {
 
 - `app/flow.ts` est une machine d'états pure (titre, sélection, jeu, pause, fin, victoire, options) qui produit un `ScreenModel`. `ui.show(model)` construit l'écran DOM correspondant. L'UI ne connaît pas l'app, elle appelle seulement des callbacks.
 
-```ts
-type ScreenModel =
-  | { kind: 'title'; phase: 'pressKey' | 'menu' }
-  | { kind: 'levelSelect'; levels: LevelCard[]; stars: number; maxStars: number }
-  | { kind: 'playing' }
-  | { kind: 'pause'; canRestoreCheckpoint: boolean }
-  | { kind: 'levelEnd'; result: RunResult; newRecords: { time: boolean; pulses: boolean }; hasNext: boolean }
-  | { kind: 'victory'; stars: number; maxStars: number; pearls: number; maxPearls: number }
-  | { kind: 'options'; options: Options; returnTo: 'title' | 'pause' };
-
-interface LevelCard { slug: string; number: number; name: string; locked: boolean; stars: StarSet }
-
-interface UiCallbacks {
-  onAnyKey(): void;            // titre : débloque l'audio
-  onPlay(): void; onOpenOptions(): void; onBack(): void;
-  onSelectLevel(slug: string): void;
-  onResume(): void; onRestoreCheckpoint(): void; onRestartLevel(): void; onQuitToSelect(): void;
-  onNextLevel(): void; onReplay(): void;
-  onOptionsChange(options: Options): void;
-  onUiSound(kind: 'move' | 'confirm' | 'back'): void;
-}
-```
+Le contrat complet est `src/ui/types.ts` (source de vérité, commenté) : `ScreenModel` (titre avec phase, sélection avec cartes de niveau, jeu, pause, fin de niveau avec résultat, records, `hasNext` et `isLast`, victoire avec totaux, options avec `returnTo`) et `UiCallbacks` (un rappel par action de l'utilisateur, plus `onUiSound`).
 
 - Le HUD n'est pas dans l'UI DOM : il est dessiné par `render/hud.ts`.
 - Les couleurs viennent de `palette.ts` via `theme.ts`, qui pose des variables CSS `--c-<clé>`. Les textes viennent de `strings.ts`. La navigation au clavier passe par `focus.ts` (flèches, ZQSD/WASD, Entrée, Espace, Échap) et la souris fonctionne aussi.

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { LEVEL_CATALOG } from '../data/levels/index';
+import { autopilot } from './autopilot';
 import { LEVELS, TUNING } from '../data/tuning';
 import { compileLevel } from './level/compile';
 import { parseLevel } from './level/parse';
@@ -87,6 +88,16 @@ describe('catalogue des niveaux', () => {
       expect(p.pos.x).toBeLessThan(world.level.width);
       expect(p.pos.y).toBeGreaterThan(0);
       expect(p.pos.y).toBeLessThan(world.level.height);
+    },
+  );
+
+  it.each(LEVEL_CATALOG.map((l, i) => [l.id, i] as const))(
+    '%s : un pilote automatique le termine avec la vraie physique (sans dégât)',
+    (_id, index) => {
+      const world = build(index, 1);
+      world.options.god = true;
+      const time = autopilot(world, 600);
+      expect(time).not.toBeNull();
     },
   );
 

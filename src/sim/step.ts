@@ -1,6 +1,20 @@
 import type { InputFrame } from './inputFrame';
 import { STEP } from './step-constants';
+import { updateBeacon } from './systems/beacon';
+import { processNoises, updateCreatures } from './systems/creatures';
+import { updateDoors } from './systems/doors';
+import { updateEnergy } from './systems/energy';
+import { updateHazards } from './systems/hazards';
+import { updateDying, updateExit } from './systems/lifecycle';
+import { updateLures, updateThrow } from './systems/lures';
+import {
+  updateCapsules,
+  updateCheckpoints,
+  updateLevers,
+  updatePearls,
+} from './systems/pickups';
 import { updateProbe } from './systems/probe';
+import { updateCharge, updatePulses } from './systems/pulse';
 import type { World } from './world';
 
 export { STEP };
@@ -24,9 +38,29 @@ export function stepWorld(world: World, input: InputFrame): void {
     l.prev.x = l.pos.x;
     l.prev.y = l.pos.y;
   }
-  if (s.status !== 'playing') return;
+  if (s.status !== 'playing') {
+    // Les fronts et rémanences continuent de s'effacer pendant les animations de fin.
+    updatePulses(world);
+    if (s.status === 'dying') updateDying(world);
+    return;
+  }
 
   world.stats.time += STEP;
+  updateCharge(world, input);
+  updateThrow(world, input);
+  updateEnergy(world);
   updateProbe(world, input);
+  updateLures(world);
+  updatePearls(world);
+  updateCapsules(world);
+  updateLevers(world);
+  updateCheckpoints(world);
+  updateDoors(world);
+  updatePulses(world);
+  processNoises(world);
   s.pendingNoises.length = 0;
+  updateCreatures(world);
+  updateHazards(world);
+  updateBeacon(world);
+  if (world.state.status === 'playing') updateExit(world);
 }

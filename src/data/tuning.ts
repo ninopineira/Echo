@@ -37,6 +37,8 @@ export const TUNING = {
     invulnerability: 1.5,
     /** Vitesse de recul après un dégât. */
     knockback: 4,
+    /** Durée de l'implosion et du fondu avant la reprise. */
+    destroyedDuration: 1.2,
   },
 
   pulse: {
@@ -208,8 +210,8 @@ export const LEVELS: Record<string, LevelTuning> = {
   'premier-echo': { par: 10, beaconInterval: 2 },
   // Valeurs prévues par le GDD § 7.2, à activer (décommenter) avec leur niveau : une entrée
   // sans niveau dans le catalogue est une erreur E06.
-  // meandres: { par: 9, beaconInterval: 3 },
-  // oursins: { par: 10, beaconInterval: 3.5 },
+  meandres: { par: 9, beaconInterval: 3 },
+  oursins: { par: 11, beaconInterval: 3.5 },
   // courants: { par: 11, beaconInterval: 4 },
   // 'le-guetteur': { par: 10, beaconInterval: 4, overrides: { guetteur: { hearingRadius: 8, huntSpeed: 3.2 } } },
   // leurres: { par: 11, beaconInterval: 4.5 },

@@ -59,6 +59,8 @@ export interface Reveal {
   at: number;
   fade: number;
   radius: number;
+  /** État figé au moment de la révélation (levier tiré, point actif, direction de courant…). */
+  state: number;
 }
 
 export interface Noise {
@@ -128,6 +130,10 @@ export interface LeviathanState {
   surge: number;
   /** Temps écoulé depuis le réveil (s). */
   awakeTime: number;
+  /** Distance de chemin jusqu'à la sonde au dernier recalcul (cases). */
+  pathDistance: number;
+  /** Temps restant avant le prochain recalcul du chemin (s). */
+  repathTimer: number;
 }
 
 export type Creature = GuetteurState | LeviathanState;
@@ -235,6 +241,8 @@ export function createWorld(
       wakeTimer: tuning.leviathan.wakeDelay,
       surge: 0,
       awakeTime: 0,
+      pathDistance: Infinity,
+      repathTimer: 0,
     });
   }
   const state: WorldState = {

@@ -59,6 +59,9 @@ npm run format           # Prettier (les .md sont exclus)
 - Un appui et un relâchement d'Espace entre deux pas doivent produire une impulsion : les fronts sont mémorisés jusqu'au `sample()` suivant.
 - Instantané de point de contrôle : copie profonde écrite à la main (`structuredClone` est interdit dans `sim`). Les statistiques de la tentative ne sont jamais restaurées.
 - Aucun dossier interne ne doit porter le nom d'une couche (`render`, `audio`, `ui`…), car les règles ESLint d'import s'appuient sur ces noms.
+- Dijkstra (`sim/nav.ts`) : calculer en double précision ; comparer des distances arrondies en float32 casse l'algorithme.
+- Audio : appeler `stopGameSounds()` avant `handle()` dans une même frame, sinon le son de reprise est coupé avec le reste.
+- Tests avec Bash : `rm -rf` est refusé par les permissions ; supprimer avec `rm` fichier par fichier.
 - Canvas : DPR plafonné à 2. Pas de `shadowBlur` ni de `ctx.filter` : le halo se fait en traits additifs (`glow.ts`).
 - TypeScript est épinglé en 6.0.x (typescript-eslint n'accepte pas encore TS 6.1 et plus). Ne pas monter de version sans vérifier `npm view typescript-eslint peerDependencies`.
 - Couleurs imposées par le brief (fond, sonar, danger, perle, balise, créature) : ne pas les modifier. Menus : voir les interdits du GDD § 5.

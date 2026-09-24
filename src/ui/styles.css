@@ -1,0 +1,768 @@
+/*
+ * Écrans DOM d'ÉCHO (GDD § 5, « Menus »).
+ * - Couleurs : uniquement var(--c-<clé>), posées par theme.ts depuis src/data/palette.ts.
+ * - Police : Chakra Petch 400 (texte) et 600 (titres). Échelle : 96 / 32 / 18 / 14 px.
+ * - Formes : rectangles aux coins chanfreinés à 45°, comme les parois de la grotte.
+ * - Focus : filet cyan de 2 px, fond teinté et marque sonar. Clavier et souris partagent la même
+ *   sélection (le survol déplace le focus), d'où :focus plutôt que :focus-visible.
+ * - Mouvement : un seul moment par écran (les étoiles de fin de niveau ; au titre, les anneaux sont
+ *   dessinés par le canvas). Tout est coupé avec prefers-reduced-motion.
+ */
+
+/* ---- Racine ---------------------------------------------------------------------------------- */
+
+.ui-root {
+  font-family: 'Chakra Petch', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--c-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.ui-root *,
+.ui-root *::before,
+.ui-root *::after {
+  box-sizing: border-box;
+}
+
+.ui-root :where(h1, h2, p, ul, ol, dl, dt, dd) {
+  margin: 0;
+  padding: 0;
+}
+
+.ui-root :where(ul, ol) {
+  list-style: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---- Écran ----------------------------------------------------------------------------------- */
+
+/* Chaque écran couvre la fenêtre et capte la souris. Le voile (--veil) laisse plus ou moins voir
+   le canvas : 0 % au titre, 70 % sur le jeu figé, 85 % en pause (terrain masqué). */
+.screen {
+  --veil: 90%;
+  position: absolute;
+  inset: 0;
+  display: grid;
+  padding: 32px 40px;
+  overflow: auto;
+  pointer-events: auto;
+  user-select: none;
+  background: color-mix(in srgb, var(--c-background) var(--veil), transparent);
+}
+
+/* Marges automatiques : centré, sans rogner le haut si la fenêtre est trop basse. */
+.screen > * {
+  margin: auto;
+}
+
+.screen-title {
+  --veil: 0%;
+}
+.screen-select {
+  --veil: 92%;
+}
+.screen-pause,
+.screen-options {
+  --veil: 85%;
+}
+.screen-end {
+  --veil: 70%;
+}
+.screen-victory {
+  --veil: 94%;
+}
+
+/* ---- Typographie ----------------------------------------------------------------------------- */
+
+.heading {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  color: var(--c-text);
+}
+
+.subtitle {
+  margin-top: 6px;
+  color: var(--c-textMuted);
+}
+
+/* ---- Chanfrein ------------------------------------------------------------------------------- */
+
+/* Forme commune : coins haut-gauche et bas-droite coupés à 45°. Le filet est le fond de l'élément,
+   le remplissage un ::before en retrait de --bw ; le chanfrein intérieur est corrigé pour que le
+   filet garde la même épaisseur sur la diagonale (c − b·(2 − √2)).
+   Chaque composant pose ses quatre variables : --cut, --bw, --edge, --fill. */
+.chamfer {
+  position: relative;
+  isolation: isolate;
+  background: var(--edge);
+  clip-path: polygon(
+    var(--cut) 0,
+    100% 0,
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    0 100%,
+    0 var(--cut)
+  );
+}
+
+.chamfer::before {
+  --cut-in: max(0px, calc(var(--cut) - var(--bw) * 0.5858));
+  content: '';
+  position: absolute;
+  inset: var(--bw);
+  z-index: -1;
+  background: var(--fill);
+  clip-path: polygon(
+    var(--cut-in) 0,
+    100% 0,
+    100% calc(100% - var(--cut-in)),
+    calc(100% - var(--cut-in)) 100%,
+    0 100%,
+    0 var(--cut-in)
+  );
+}
+
+.panel {
+  --cut: 22px;
+  --bw: 1px;
+  --edge: var(--c-line);
+  --fill: var(--c-panel);
+  width: min(var(--panel-w, 480px), 100%);
+  padding: 32px 36px 36px;
+}
+
+/* ---- Éléments sélectionnables : boutons, cases de niveau, lignes d'options -------------------- */
+
+.btn,
+.card,
+.opt {
+  --bw: 1px;
+  --edge: var(--c-line);
+  --fill: var(--c-panel);
+  margin: 0;
+  border: 0;
+  font: inherit;
+  color: var(--c-text);
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:focus,
+.card:focus,
+.opt:focus {
+  --bw: 2px;
+  --edge: var(--c-sonar);
+  --fill: color-mix(in srgb, var(--c-sonar) 12%, var(--c-panel));
+  color: var(--c-probe);
+}
+
+.btn:active,
+.opt:active {
+  --fill: color-mix(in srgb, var(--c-sonar) 22%, var(--c-panel));
+}
+
+/* Marque sonar : un point et deux arcs, visible seulement sur l'élément sélectionné. */
+.mark {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  color: var(--c-sonar);
+  opacity: 0;
+  transition: opacity 120ms ease-out;
+}
+
+.btn:focus .mark,
+.card:focus .mark,
+.opt:focus .mark {
+  opacity: 1;
+}
+
+.btn {
+  --cut: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 22px 8px 14px;
+}
+
+.btn-label {
+  flex: 1;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.row > .btn {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* ---- Titre ----------------------------------------------------------------------------------- */
+
+.title-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Le logo est tracé comme une paroi révélée : contour fin cyan, léger halo, intérieur à peine teinté.
+   Le padding compense l'espacement ajouté après la dernière lettre, pour un centrage exact. */
+.title-logo {
+  padding-left: 0.12em;
+  font-size: 96px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  color: color-mix(in srgb, var(--c-sonar) 10%, transparent);
+  -webkit-text-stroke: 1.5px var(--c-sonar);
+  text-shadow: 0 0 22px color-mix(in srgb, var(--c-sonar) 40%, transparent);
+}
+
+.title-tagline {
+  margin-top: 20px;
+  font-size: 20px;
+  color: var(--c-text);
+}
+
+/* Hauteur fixe : le logo ne saute pas entre « Appuyez sur une touche » et le menu. */
+.title-lower {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 164px;
+  margin-top: 48px;
+}
+
+.title-prompt {
+  margin-top: 36px;
+  color: var(--c-sonar);
+}
+
+.title-menu {
+  width: 260px;
+  margin-top: 0;
+}
+
+/* ---- Sélection des niveaux ------------------------------------------------------------------- */
+
+.select-frame {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: min(960px, 100%);
+}
+
+.select-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.select-total {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--c-textMuted);
+}
+
+.select-total .star {
+  width: 18px;
+  height: 18px;
+  color: var(--c-sonar);
+}
+
+.select-total-value {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text);
+}
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.card {
+  --cut: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: clamp(112px, 24vh, 156px);
+  padding: 14px 16px;
+}
+
+.card .mark {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.card-num {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.card-name {
+  margin-top: auto;
+  padding-top: 12px;
+  line-height: 1.2;
+}
+
+.card-foot {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 18px;
+  margin-top: 8px;
+}
+
+.card-foot .star {
+  width: 17px;
+  height: 17px;
+}
+
+.card-foot .lock {
+  width: 18px;
+  height: 18px;
+}
+
+.star-on {
+  color: var(--c-sonar);
+}
+
+.star-off {
+  color: var(--c-textMuted);
+}
+
+/* Niveau fermé : creusé dans le fond, texte éteint. Il reste sélectionnable (la grille ne saute
+   pas de case) mais ne se lance pas. */
+.card.is-locked {
+  --fill: var(--c-background);
+  color: var(--c-textMuted);
+  cursor: default;
+}
+
+.card.is-locked:focus {
+  --fill: var(--c-background);
+  color: var(--c-textMuted);
+}
+
+.select-foot .btn {
+  width: 220px;
+}
+
+/* ---- Pause ----------------------------------------------------------------------------------- */
+
+.screen-pause .panel {
+  --panel-w: 440px;
+}
+
+/* ---- Statistiques (fin de niveau, victoire) --------------------------------------------------- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 24px;
+  padding: 16px 0;
+  border-block: 1px solid var(--c-line);
+}
+
+.stats-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 16px;
+}
+
+.stat:first-child {
+  padding-left: 0;
+}
+
+.stat + .stat {
+  border-left: 1px solid var(--c-line);
+}
+
+.stat-label {
+  font-size: 14px;
+  color: var(--c-textMuted);
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--c-text);
+}
+
+.stat-value.is-over {
+  color: var(--c-hazard);
+}
+
+.stat-note {
+  font-size: 14px;
+  color: var(--c-sonar);
+}
+
+/* ---- Fin de niveau --------------------------------------------------------------------------- */
+
+.screen-end .panel {
+  --panel-w: 720px;
+}
+
+.end-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.beacon-mark {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--c-beacon);
+}
+
+.end-stars {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 28px;
+  text-align: center;
+}
+
+.end-star {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.end-star-icon {
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.end-star-icon .star {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.star-base {
+  color: var(--c-textMuted);
+}
+
+/* État final par défaut : sans animation (mouvement réduit), les étoiles obtenues sont allumées. */
+.star-fill {
+  color: var(--c-sonar);
+  opacity: 0;
+}
+
+.end-star.is-earned .star-fill {
+  opacity: 1;
+}
+
+.end-star-label {
+  font-size: 14px;
+  color: var(--c-textMuted);
+}
+
+.end-star.is-earned .end-star-label {
+  color: var(--c-text);
+}
+
+/* Le moment de l'écran : à son tour, chaque étoile reçoit une impulsion. Obtenue, elle s'allume
+   dans un éclat blanc bleuté qui retombe au cyan, comme une paroi touchée par l'anneau ; manquée,
+   l'anneau passe, pâle, et elle reste creuse. --delay est posé par levelEnd.ts. */
+.ping {
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid var(--c-sonar);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.end-star .ping {
+  animation: echo-ping 900ms cubic-bezier(0.2, 0.6, 0.3, 1) var(--delay) both;
+}
+
+.end-star:not(.is-earned) .ping {
+  border-color: var(--c-textMuted);
+  animation-name: echo-ping-miss;
+}
+
+.end-star.is-earned .star-fill {
+  animation: echo-star-on 520ms cubic-bezier(0.2, 0.8, 0.2, 1) var(--delay) both;
+}
+
+.end-star.is-earned .end-star-label {
+  animation: echo-label-on 320ms ease-out var(--delay) both;
+}
+
+@keyframes echo-ping {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  12% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.3);
+  }
+}
+
+@keyframes echo-ping-miss {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  12% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+@keyframes echo-star-on {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+    color: var(--c-probe);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.12);
+    color: var(--c-probe);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    color: var(--c-sonar);
+  }
+}
+
+@keyframes echo-label-on {
+  from {
+    color: var(--c-textMuted);
+  }
+  to {
+    color: var(--c-text);
+  }
+}
+
+/* ---- Victoire -------------------------------------------------------------------------------- */
+
+.victory-frame {
+  width: min(600px, 100%);
+}
+
+.victory-text {
+  max-width: 34ch;
+  margin-top: 16px;
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+.victory-frame .stats {
+  margin-top: 32px;
+}
+
+.victory-actions {
+  margin-top: 32px;
+}
+
+.victory-actions .btn {
+  width: 280px;
+}
+
+/* ---- Options --------------------------------------------------------------------------------- */
+
+.screen-options .panel {
+  --panel-w: 640px;
+}
+
+.opt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.opt {
+  --cut: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 16px 8px 14px;
+}
+
+.opt-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.opt-hint {
+  font-size: 14px;
+  color: var(--c-textMuted);
+}
+
+.opt-control {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Jauge de 20 crans : les segments de la coque du HUD, en plus fin. */
+.gauge {
+  display: flex;
+  align-items: stretch;
+  gap: 3px;
+  height: 32px;
+  padding: 7px 0;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.gauge-seg {
+  width: 8px;
+  background: var(--c-line);
+}
+
+.gauge-seg.is-on {
+  background: var(--c-sonar);
+}
+
+.opt-value {
+  min-width: 3.4em;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* Oui / non : deux cases jointives, chanfreinées aux coins extérieurs. */
+.seg {
+  --cut: 8px;
+  display: flex;
+  flex: none;
+  gap: 1px;
+  padding: 1px;
+  background: var(--c-line);
+  clip-path: polygon(
+    var(--cut) 0,
+    100% 0,
+    100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%,
+    0 100%,
+    0 var(--cut)
+  );
+}
+
+.seg-cell {
+  --cut-in: calc(var(--cut) - 0.5858px);
+  min-width: 64px;
+  padding: 4px 12px;
+  text-align: center;
+  color: var(--c-textMuted);
+  background: var(--c-background);
+}
+
+.seg-cell:first-child {
+  clip-path: polygon(var(--cut-in) 0, 100% 0, 100% 100%, 0 100%, 0 var(--cut-in));
+}
+
+.seg-cell:last-child {
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--cut-in)),
+    calc(100% - var(--cut-in)) 100%,
+    0 100%
+  );
+}
+
+.seg-cell.is-on {
+  font-weight: 600;
+  color: var(--c-probe);
+  background: color-mix(in srgb, var(--c-sonar) 26%, var(--c-background));
+}
+
+.opt-actions {
+  margin-top: 24px;
+}
+
+.opt-actions .btn {
+  width: 200px;
+}
+
+/* ---- Accessibilité --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-root *,
+  .ui-root *::before,
+  .ui-root *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Contraste forcé (Windows) : les fonds disparaissent, on garde un contour de focus explicite,
+   en retrait pour ne pas être rogné par le chanfrein. */
+@media (forced-colors: active) {
+  .btn:focus,
+  .card:focus,
+  .opt:focus {
+    outline: 3px solid Highlight;
+    outline-offset: -6px;
+  }
+}

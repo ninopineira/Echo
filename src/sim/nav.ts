@@ -22,13 +22,14 @@ export function distanceField(
 ): Float32Array {
   const { width, height, rock, door, mud } = level;
   const size = width * height;
-  const dist = new Float32Array(size).fill(Infinity);
+  // Calcul en double précision : un arrondi float32 ferait passer des entrées du tas pour périmées.
+  const dist = new Float64Array(size).fill(Infinity);
   const blocked = (i: number): boolean => {
     if (rock[i] === 1) return true;
     const d = door[i]!;
     return d >= 0 && !isDoorOpen(d);
   };
-  if (source < 0 || source >= size || blocked(source)) return dist;
+  if (source < 0 || source >= size || blocked(source)) return Float32Array.from(dist);
 
   // Tas binaire minimal sur (distance, case).
   const heapCell: number[] = [];
@@ -97,5 +98,5 @@ export function distanceField(
       }
     }
   }
-  return dist;
+  return Float32Array.from(dist);
 }

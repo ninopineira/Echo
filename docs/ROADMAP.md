@@ -36,16 +36,16 @@ En parallèle, dès que le parseur et le validateur sont en place : `level-desig
 
 Jouable : on termine le niveau 1 à l'impulsion courte, guidé par la balise. Les échos s'entendent et sont directionnels. Un écran de fin provisoire s'affiche.
 
-- [ ] `systems/pulse.ts` : machine de charge (appui bref seulement, la longue arrive en M2), recharge, rayons par DDA, vase absorbante, front, révélations d'objets en ligne de vue, purge, compteur d'impulsions, tests
-- [ ] `systems/echoes.ts` : secteurs, échos d'objets, délais, tests
-- [ ] Arc de révélation au choc
-- [ ] `systems/pickups.ts` (perles), `systems/beacon.ts` (signal périodique), `systems/lifecycle.ts` (balise atteinte → `complete`), tests
-- [ ] `render/afterglow.ts` (pur, testé), `glow.ts`, calques parois, front d'onde, perles, balise (anneau à travers les parois, repère hors champ), arc de choc
-- [ ] `sim/views.ts` (`HudModel`) et `render/hud.ts` : impulsions / par, perles, coque, arc de recharge autour de la sonde
-- [ ] `audio/engine.ts` (déblocage au premier geste, bus, limiteur, réverbération générée), `spatial.ts` (testé), `mix.ts`, `director.ts`
-- [ ] Sons : impulsion courte, échos roche et perle, balise, choc, perle ramassée, fin de niveau ; `?soundboard=1`
-- [ ] Écran « Appuyez sur une touche » minimal (déblocage de l'audio), apparition du nom et de la consigne du niveau, fin de niveau provisoire (texte des stats, Entrée pour rejouer)
-- [ ] Niveau 1 finalisé : tracé, par et intervalle de balise calés en jouant
+- [x] `systems/pulse.ts` : machine de charge (appui bref seulement, la longue arrive en M2), recharge, rayons par DDA, vase absorbante, front, révélations d'objets en ligne de vue, purge, compteur d'impulsions, tests
+- [x] `systems/echoes.ts` : secteurs, échos d'objets, délais, tests
+- [x] Arc de révélation au choc
+- [x] `systems/pickups.ts` (perles), `systems/beacon.ts` (signal périodique), `systems/lifecycle.ts` (balise atteinte → `complete`), tests
+- [x] `render/afterglow.ts` (pur, testé), `glow.ts`, calques parois, front d'onde, perles, balise (anneau à travers les parois, repère hors champ), arc de choc
+- [x] `sim/views.ts` (`HudModel`) et `render/hud.ts` : impulsions / par, perles, coque, arc de recharge autour de la sonde
+- [x] `audio/engine.ts` (déblocage au premier geste, bus, limiteur, réverbération générée), `spatial.ts` (testé), `mix.ts`, `director.ts`
+- [x] Sons : impulsion courte, échos roche et perle, balise, choc, perle ramassée, fin de niveau ; `?soundboard=1`
+- [x] Écran « Appuyez sur une touche » minimal (déblocage de l'audio), apparition du nom et de la consigne du niveau, fin de niveau provisoire (texte des stats, Entrée pour rejouer)
+- [x] Niveau 1 finalisé : tracé, par et intervalle de balise calés en jouant
 
 En parallèle : `sound-designer` réalise les sons de cette liste dès que `events.ts` et `engine.ts` existent.
 
@@ -53,13 +53,13 @@ En parallèle : `sound-designer` réalise les sons de cette liste dès que `even
 
 Jouable : niveaux 1 et 2 enchaînés. L'impulsion longue fonctionne, les trois étoiles sont calculées et l'écran de fin est le vrai.
 
-- [ ] Impulsion longue : charge avec déclenchement automatique à `longChargeTime`, recharge commune selon le type de la dernière émise, tests (appui et relâchement dans le même pas, maintien)
-- [ ] `RunStats` (temps, impulsions, pertes), `sim/scoring.ts` (étoiles, `RunResult`), tests
-- [ ] Rendu : anneau de charge, impulsion longue, par dépassé en corail dans le HUD
-- [ ] Sons : impulsion longue, montée de charge, impulsion refusée, étoiles
-- [ ] Contrat UI : `ScreenModel` et `UiCallbacks`, `ui/ui.ts`, `theme.ts`, `strings.ts`, `focus.ts`, styles de base
-- [ ] Écran de fin de niveau : statistiques, étoiles qui s'allument, Niveau suivant / Rejouer / Sélection (la sélection renvoie au niveau 1 tant que M3 n'est pas fait)
-- [ ] Niveau 2 `meandres` finalisé
+- [x] Impulsion longue : charge avec déclenchement automatique à `longChargeTime`, recharge commune selon le type de la dernière émise, tests (appui et relâchement dans le même pas, maintien)
+- [x] `RunStats` (temps, impulsions, pertes), `sim/scoring.ts` (étoiles, `RunResult`), tests
+- [x] Rendu : anneau de charge, impulsion longue, par dépassé en corail dans le HUD
+- [x] Sons : impulsion longue, montée de charge, impulsion refusée, étoiles
+- [x] Contrat UI : `ScreenModel` et `UiCallbacks`, `ui/ui.ts`, `theme.ts`, `strings.ts`, `focus.ts`, styles de base
+- [x] Écran de fin de niveau : statistiques, étoiles qui s'allument, Niveau suivant / Rejouer / Sélection (la sélection renvoie au niveau 1 tant que M3 n'est pas fait)
+- [x] Niveau 2 `meandres` finalisé
 
 En parallèle : `ui-screens` construit l'écran de fin et la base de style dès que le contrat UI est écrit.
 
@@ -67,12 +67,12 @@ En parallèle : `ui-screens` construit l'écran de fin et la base de style dès 
 
 Jouable : le parcours complet titre → sélection → niveau → fin → suivant, avec pause, options et sauvegarde persistante.
 
-- [ ] `save/save.ts` (schéma v1, chargement tolérant, `recordRun`, `isUnlocked`, options, migration) et tests
-- [ ] `app/flow.ts` (machine d'états des écrans) et tests ; `app/app.ts`
-- [ ] Écrans titre (anneaux sonar en fond, « Appuyez sur une touche », Jouer, Options), sélection (10 cases, verrous, étoiles, total), pause (terrain masqué, Reprendre, Recommencer, Options, Quitter), options (volume, rémanence allongée, tremblement), victoire (générique, affiché après le dernier niveau disponible)
-- [ ] Application des options en direct : volume sur `master`, rémanence via `SimOptions` au chargement du niveau, tremblement dans le rendu
-- [ ] Pause automatique à la perte de focus ; gestion d'Échap sans double traitement
-- [ ] `?unlock=1`, libellés des touches selon la disposition (`input/layout.ts`)
+- [x] `save/save.ts` (schéma v1, chargement tolérant, `recordRun`, `isUnlocked`, options, migration) et tests
+- [x] `app/flow.ts` (machine d'états des écrans) et tests ; `app/app.ts`
+- [x] Écrans titre (anneaux sonar en fond, « Appuyez sur une touche », Jouer, Options), sélection (10 cases, verrous, étoiles, total), pause (terrain masqué, Reprendre, Recommencer, Options, Quitter), options (volume, rémanence allongée, tremblement), victoire (générique, affiché après le dernier niveau disponible)
+- [x] Application des options en direct : volume sur `master`, rémanence via `SimOptions` au chargement du niveau, tremblement dans le rendu
+- [x] Pause automatique à la perte de focus ; gestion d'Échap sans double traitement
+- [x] `?unlock=1`, libellés des touches selon la disposition (`input/layout.ts`)
 
 En parallèle : `ui-screens` réalise les cinq écrans pendant que le fil principal fait la sauvegarde et le flux.
 

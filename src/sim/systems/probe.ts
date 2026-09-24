@@ -61,6 +61,7 @@ export function updateProbe(world: World, input: InputFrame): void {
         at: world.time,
         fade: t.probe.bumpRevealAfterglow * world.options.afterglowMultiplier,
         radius: t.probe.bumpRevealRadius,
+        state: 0,
       });
     }
   }

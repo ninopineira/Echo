@@ -42,6 +42,15 @@ Une ligne de décision, une ligne de justification. On ajoute les nouvelles déc
 | D34 | `STEP` défini dans `sim/step-constants.ts` et réexporté par `sim/step.ts` | Évite l'import circulaire entre `step.ts` et les systèmes. |
 | D35 | Type `InputFrame` dans `sim/inputFrame.ts` (et non `sim/input.ts`) | Un fichier nommé comme une couche serait rejeté par la règle d'import ESLint. |
 | D36 | `LEVELS` ne contient que les niveaux du catalogue ; les valeurs prévues des autres restent en commentaire jusqu'à leur création | Une entrée sans niveau est une erreur E06 du validateur. |
+| D37 | Libellés du HUD dans `render/hud.ts`, textes des écrans dans `ui/strings.ts`, libellés de la table d'écoute dans `audio/soundboard.ts` | Les couches `render` et `audio` n'ont pas le droit d'importer `ui/` ; chaque couche garde ses propres textes. |
+| D38 | Champs de distance calculés en double précision puis rendus en `Float32Array` | Un arrondi float32 faisait passer des entrées du tas de Dijkstra pour périmées et arrêtait l'exploration. |
+| D39 | Test de franchissabilité par pilote automatique (`sim/autopilot.ts`) sur chaque niveau du catalogue, en mode sans dégât | Le validateur raisonne sur la grille ; le pilote vérifie avec la vraie physique (coins, courants, portes). |
+| D40 | Écho panoramique selon la direction (`cos(angle) × 0,85`), la distance portée par le délai, le volume, la brillance et la réverbération | Une paroi proche à droite doit sonner aussi à droite qu'une paroi lointaine (choix de l'agent son, validé). |
+| D41 | Volume maître en courbe au carré | Réglage perçu plus régulier sur la jauge. |
+| D42 | `LevelRecord.bestPearls` ajouté à la sauvegarde v1 (champ absent lu comme `null`) | L'écran de victoire affiche le total de perles ; le chargement tolérant rend l'ajout rétrocompatible. |
+| D43 | Reprise au point de contrôle au centre du point, à l'arrêt | L'instantané pris au contact plaçait la sonde là où elle avait frôlé le point. |
+| D44 | Écran de fin : clavier armé après 400 ms, ouverture 1,1 s après la balise | Un Espace tapoté en touchant la balise ne saute pas l'écran, et l'éclat de la balise a le temps d'être vu. |
+| D45 | Rappel des touches de nage (lettres réelles de la disposition) sous la consigne du premier niveau | Le GDD demande d'afficher les lettres réelles ; c'est le seul niveau où les contrôles doivent être rappelés. |
 
 ## Choix de conception tranchés
 
