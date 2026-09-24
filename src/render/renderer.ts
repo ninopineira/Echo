@@ -9,7 +9,7 @@ import { drawDebugText, drawGeometry, type FrameStats } from './debug';
 import { GlowBatch } from './glow';
 import { drawHud } from './hud';
 import { drawBeacon } from './layers/beacon';
-import { drawEffects, freshEffectTimes, type EffectTimes } from './layers/effects';
+import { drawEffects, drawImplosion, freshEffectTimes, type EffectTimes } from './layers/effects';
 import { drawReveals } from './layers/entities';
 import { drawProbe } from './layers/probe';
 import { drawSignals, prunePings, type Ping } from './layers/signals';
@@ -93,6 +93,12 @@ export class Renderer {
         case 'levelComplete':
           this.effects.complete = world.time;
           break;
+        case 'probeDestroyed':
+          this.effects.destroyed = world.time;
+          this.effects.destroyedX = e.pos.x;
+          this.effects.destroyedY = e.pos.y;
+          this.camera.addTrauma(world.tuning.shake.damage);
+          break;
         case 'pulseDenied':
           if (e.reason === 'energy') this.energyDenied = world.time;
           break;
@@ -165,6 +171,7 @@ export class Renderer {
     drawSignals(view, world, this.lurePings);
     drawBeacon(view, world, this.lastPing);
     drawProbe(view, world, hud);
+    drawImplosion(view, this.effects);
     drawEffects(ctx, this.w, this.h, world, this.effects, view.time);
     if (flags.hud) drawHud(ctx, this.w, this.h, hud, world, view.time - this.energyDenied, this.controlsKeys);
   }

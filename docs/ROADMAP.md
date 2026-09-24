@@ -80,21 +80,21 @@ En parallèle : `ui-screens` réalise les cinq écrans pendant que le fil princi
 
 Jouable : niveaux 1 à 3. On peut perdre la sonde et le niveau reprend au départ.
 
-- [ ] `systems/hazards.ts` : contact, dégât, invulnérabilité, recul ; `lifecycle` : destruction, fondu, restauration de l'instantané de départ, stats conservées ; `?god=1`, F3, F4 ; tests
-- [ ] Rendu : oursins (étoiles corail irrégulières), coque dans le HUD, clignotement, vignette de dégât, tremblement (option), implosion et fondu
-- [ ] Sons : écho d'oursin (crépitement), dégât, alarme de coque critique, destruction, reprise
-- [ ] Validation : oursins bloquants pour l'atteignabilité, W06
-- [ ] Niveau 3 `oursins`
+- [x] `systems/hazards.ts` : contact, dégât, invulnérabilité, recul ; `lifecycle` : destruction, fondu, restauration de l'instantané de départ, stats conservées ; `?god=1`, F3, F4 ; tests
+- [x] Rendu : oursins (étoiles corail irrégulières), coque dans le HUD, clignotement, vignette de dégât, tremblement (option), implosion et fondu
+- [x] Sons : écho d'oursin (crépitement), dégât, alarme de coque critique, destruction, reprise
+- [x] Validation : oursins bloquants pour l'atteignabilité, W06
+- [x] Niveau 3 `oursins`
 
 ## M5 — Courants (niveau 4)
 
 Jouable : niveaux 1 à 4.
 
-- [ ] `systems/currents.ts` : poussée sur la sonde (les leurres suivront en M7), tests
-- [ ] Révélation des courants en stries qui dérivent
-- [ ] Son : souffle continu tant qu'on est dans un courant (`AmbientModel`)
-- [ ] Validation : sens unique si `strength ≥ thrust`, tests
-- [ ] Niveau 4 `courants`
+- [x] `systems/currents.ts` : poussée sur la sonde (les leurres suivront en M7), tests
+- [x] Révélation des courants en stries qui dérivent
+- [x] Son : souffle continu tant qu'on est dans un courant (`AmbientModel`)
+- [x] Validation : sens unique si `strength ≥ thrust`, tests
+- [x] Niveau 4 `courants`
 
 ## M6 — Le Guetteur (niveau 5)
 

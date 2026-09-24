@@ -1,16 +1,29 @@
 import { PALETTE } from '../../data/palette';
 import type { World } from '../../sim/world';
+import { TAU } from '../../sim/math/vec';
 import { withAlpha } from '../color';
+import { sx, sy, type View } from '../view';
 
 /** Temps (monde) des derniers événements marquants, tenus par le rendu. */
 export interface EffectTimes {
   damage: number;
   respawn: number;
   complete: number;
+  /** Destruction de la sonde : instant et position (implosion). */
+  destroyed: number;
+  destroyedX: number;
+  destroyedY: number;
 }
 
 export function freshEffectTimes(): EffectTimes {
-  return { damage: -Infinity, respawn: -Infinity, complete: -Infinity };
+  return {
+    damage: -Infinity,
+    respawn: -Infinity,
+    complete: -Infinity,
+    destroyed: -Infinity,
+    destroyedX: 0,
+    destroyedY: 0,
+  };
 }
 
 /** Effets plein écran : vignette corail de dégât, fondu de destruction et de reprise, fin de niveau. */
@@ -44,4 +57,30 @@ export function drawEffects(
     ctx.fillStyle = withAlpha(PALETTE.background, dark);
     ctx.fillRect(0, 0, w, h);
   }
+}
+
+/** Implosion de la sonde : anneau qui se referme et éclat (GDD § 5). */
+export function drawImplosion(v: View, times: EffectTimes): void {
+  const since = v.time - times.destroyed;
+  if (since < 0 || since > 0.6) return;
+  const { ctx } = v;
+  const x = sx(v, times.destroyedX);
+  const y = sy(v, times.destroyedY);
+  const u = since / 0.6;
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  const flash = Math.max(0, 1 - since / 0.15);
+  if (flash > 0) {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, v.scale * 1.6);
+    g.addColorStop(0, withAlpha(PALETTE.probe, 0.8 * flash));
+    g.addColorStop(1, withAlpha(PALETTE.probe, 0));
+    ctx.fillStyle = g;
+    ctx.fillRect(x - v.scale * 1.6, y - v.scale * 1.6, v.scale * 3.2, v.scale * 3.2);
+  }
+  ctx.lineWidth = Math.max(1.5, v.scale / 25);
+  ctx.strokeStyle = withAlpha(PALETTE.probe, 1 - u);
+  ctx.beginPath();
+  ctx.arc(x, y, v.scale * 1.4 * (1 - u) + 1, 0, TAU);
+  ctx.stroke();
+  ctx.restore();
 }
