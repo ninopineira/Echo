@@ -37,7 +37,11 @@ describe('oursins, coque et reprise', () => {
     expect(events.some((e) => e.type === 'probeDestroyed')).toBe(true);
     expect(w.state.status).toBe('dying');
     const more = run(w, seconds(TUNING.probe.destroyedDuration + 0.1));
-    expect(more).toContainEqual({ type: 'respawn', pos: { x: 1.5, y: 1.5 }, fromCheckpoint: false });
+    expect(more).toContainEqual({
+      type: 'respawn',
+      pos: { x: 1.5, y: 1.5 },
+      fromCheckpoint: false,
+    });
     expect(w.state.status).toBe('playing');
     expect(w.state.probe.hull).toBe(TUNING.probe.hullMax);
     expect(w.stats.deaths).toBe(1);
@@ -109,7 +113,9 @@ describe('leurres', () => {
     const later = run(w, seconds(6));
     const pings = later.filter((e) => e.type === 'lurePing');
     expect(pings).toHaveLength(TUNING.lure.pings);
-    expect(later.filter((e) => e.type === 'noise' && e.source === 'lure')).toHaveLength(TUNING.lure.pings);
+    expect(later.filter((e) => e.type === 'noise' && e.source === 'lure')).toHaveLength(
+      TUNING.lure.pings,
+    );
     expect(w.state.lures).toHaveLength(0);
     const empty = run(w, 1, input({ throwPressed: true }));
     expect(empty).toContainEqual({ type: 'lureEmpty' });

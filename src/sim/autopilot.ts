@@ -19,7 +19,8 @@ export function autopilot(world: World, maxSeconds: number): number | null {
     .filter((l) => reach.steps[l.cell.y * level.width + l.cell.x] !== -1)
     .sort(
       (a, b) =>
-        reach.steps[a.cell.y * level.width + a.cell.x]! - reach.steps[b.cell.y * level.width + b.cell.x]!,
+        reach.steps[a.cell.y * level.width + a.cell.x]! -
+        reach.steps[b.cell.y * level.width + b.cell.x]!,
     );
   const goals: Vec2[] = [...levers.map((l) => cellCenter(l.cell)), cellCenter(level.exit)];
   const maxSteps = Math.round(maxSeconds * 120);

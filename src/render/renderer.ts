@@ -174,7 +174,8 @@ export class Renderer {
     drawImplosion(view, this.effects);
     if (flags.debug) drawCreatureDebug(view, world);
     drawEffects(ctx, this.w, this.h, world, this.effects, view.time);
-    if (flags.hud) drawHud(ctx, this.w, this.h, hud, world, view.time - this.energyDenied, this.controlsKeys);
+    if (flags.hud)
+      drawHud(ctx, this.w, this.h, hud, world, view.time - this.energyDenied, this.controlsKeys);
   }
 
   /** Voile opaque sous un écran de menu (pause) : masque le terrain. */

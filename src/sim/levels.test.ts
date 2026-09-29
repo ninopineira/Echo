@@ -62,7 +62,9 @@ describe('catalogue des niveaux', () => {
     const report = validateCatalog(LEVEL_CATALOG, LEVELS, TUNING);
     const errors = [
       ...report.catalog,
-      ...report.reports.flatMap((r) => r.diagnostics.map((d) => ({ ...d, message: `${r.id}: ${d.message}` }))),
+      ...report.reports.flatMap((r) =>
+        r.diagnostics.map((d) => ({ ...d, message: `${r.id}: ${d.message}` })),
+      ),
     ].filter((d) => d.severity === 'error');
     expect(errors).toEqual([]);
   });

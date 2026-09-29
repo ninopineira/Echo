@@ -10,7 +10,9 @@ import {
   type KeyValueStore,
 } from './save';
 
-function memoryStore(initial: Record<string, string> = {}): KeyValueStore & { data: Record<string, string> } {
+function memoryStore(
+  initial: Record<string, string> = {},
+): KeyValueStore & { data: Record<string, string> } {
   const data = { ...initial };
   return {
     data,
@@ -81,12 +83,24 @@ describe('sauvegarde', () => {
 
   it('cumule les étoiles par critère et garde les records', () => {
     let save = defaultSave();
-    save = recordRun(save, result({ pulses: 14, stars: { complete: true, pearls: true, par: false } })).save;
+    save = recordRun(
+      save,
+      result({ pulses: 14, stars: { complete: true, pearls: true, par: false } }),
+    ).save;
     const second = recordRun(
       save,
-      result({ time: 40, pulses: 9, pearls: 1, stars: { complete: true, pearls: false, par: true } }),
+      result({
+        time: 40,
+        pulses: 9,
+        pearls: 1,
+        stars: { complete: true, pearls: false, par: true },
+      }),
     );
-    expect(second.save.levels['premier-echo']!.stars).toEqual({ complete: true, pearls: true, par: true });
+    expect(second.save.levels['premier-echo']!.stars).toEqual({
+      complete: true,
+      pearls: true,
+      par: true,
+    });
     expect(second.newRecords).toEqual({ time: true, pulses: true });
     expect(second.save.levels['premier-echo']!.bestPulses).toBe(9);
     expect(second.save.levels['premier-echo']!.bestPearls).toBe(2);

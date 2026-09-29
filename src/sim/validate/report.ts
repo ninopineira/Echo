@@ -12,7 +12,9 @@ export function formatLevelReport(report: LevelReport, verbose: boolean): string
       : '';
   const out = [`${head} ${report.id}${size}${path}`];
   for (const d of report.diagnostics) {
-    out.push(`       ${d.code} ${d.severity === 'error' ? 'erreur' : 'avertissement'} : ${d.message}`);
+    out.push(
+      `       ${d.code} ${d.severity === 'error' ? 'erreur' : 'avertissement'} : ${d.message}`,
+    );
   }
   if (verbose && s) {
     const onPath = new Set(s.path.slice(1, -1));

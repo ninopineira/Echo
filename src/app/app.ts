@@ -43,7 +43,8 @@ export class App {
   private flow: FlowState = initialFlow();
   private session: GameSession | null = null;
   private levelIndex = 0;
-  private lastResult: { result: RunResult; newRecords: { time: boolean; pulses: boolean } } | null = null;
+  private lastResult: { result: RunResult; newRecords: { time: boolean; pulses: boolean } } | null =
+    null;
   private recorded = false;
   private last = 0;
   private readonly stats: FrameStats = { fps: 60, frameMs: 16.7, simMs: 0, renderMs: 0 };
@@ -239,7 +240,11 @@ export class App {
         };
       }
       case 'options':
-        return { kind: 'options', options: { ...this.save.options }, returnTo: this.flow.optionsReturn };
+        return {
+          kind: 'options',
+          options: { ...this.save.options },
+          returnTo: this.flow.optionsReturn,
+        };
     }
   }
 
@@ -339,7 +344,12 @@ export class App {
         this.checkLevelEnd();
       }
     }
-    const showWorld = session !== null && (screen === 'playing' || screen === 'pause' || screen === 'levelEnd' || (screen === 'options' && this.flow.optionsReturn === 'pause'));
+    const showWorld =
+      session !== null &&
+      (screen === 'playing' ||
+        screen === 'pause' ||
+        screen === 'levelEnd' ||
+        (screen === 'options' && this.flow.optionsReturn === 'pause'));
     this.audio.update(showWorld ? ambientModel(session.world) : null, dt);
     const r0 = performance.now();
     this.renderer.frame(

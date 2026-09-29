@@ -43,7 +43,12 @@ export function input(partial: Partial<InputFrame> = {}): InputFrame {
 export function run(world: World, steps: number, frame: InputFrame = input()): World['events'] {
   const all: World['events'] = [];
   for (let i = 0; i < steps; i++) {
-    stepWorld(world, i === 0 ? frame : { ...frame, pulsePressed: false, pulseReleased: false, throwPressed: false });
+    stepWorld(
+      world,
+      i === 0
+        ? frame
+        : { ...frame, pulsePressed: false, pulseReleased: false, throwPressed: false },
+    );
     all.push(...world.events);
     world.events = [];
   }

@@ -7,12 +7,7 @@ import { updateEnergy } from './systems/energy';
 import { updateHazards } from './systems/hazards';
 import { updateDying, updateExit } from './systems/lifecycle';
 import { updateLures, updateThrow } from './systems/lures';
-import {
-  updateCapsules,
-  updateCheckpoints,
-  updateLevers,
-  updatePearls,
-} from './systems/pickups';
+import { updateCapsules, updateCheckpoints, updateLevers, updatePearls } from './systems/pickups';
 import { updateProbe } from './systems/probe';
 import { updateCharge, updatePulses } from './systems/pulse';
 import type { World } from './world';

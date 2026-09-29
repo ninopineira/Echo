@@ -4,14 +4,7 @@ export type PulseKind = 'short' | 'long';
 export type CreatureKind = 'guetteur' | 'leviathan';
 export type NoiseSource = 'pulse' | 'bump' | 'lure' | 'door';
 export type EchoSurface =
-  | 'rock'
-  | 'door'
-  | 'hazard'
-  | 'pearl'
-  | 'creature'
-  | 'lever'
-  | 'capsule'
-  | 'checkpoint';
+  'rock' | 'door' | 'hazard' | 'pearl' | 'creature' | 'lever' | 'capsule' | 'checkpoint';
 
 export interface Echo {
   /** Secondes après l'émission : 2 × distance / speed. */

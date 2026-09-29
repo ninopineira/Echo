@@ -33,7 +33,15 @@ describe('parseLevel', () => {
       { cell: { x: 5, y: 3 }, dir: 2 },
     ]);
     expect(l.levers).toEqual([{ letter: 'A', cell: { x: 1, y: 2 } }]);
-    expect(l.doors).toEqual([{ letter: 'A', cells: [{ x: 3, y: 2 }, { x: 5, y: 2 }] }]);
+    expect(l.doors).toEqual([
+      {
+        letter: 'A',
+        cells: [
+          { x: 3, y: 2 },
+          { x: 5, y: 2 },
+        ],
+      },
+    ]);
     expect(l.door[2 * 8 + 3]).toBe(0);
     expect(l.checkpoints).toHaveLength(1);
     expect(l.capsules).toHaveLength(1);

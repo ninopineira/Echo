@@ -7,7 +7,10 @@ export function updateExit(world: World): void {
   const s = world.state;
   const exit = cellCenter(world.level.exit);
   const p = s.probe.pos;
-  if (Math.hypot(exit.x - p.x, exit.y - p.y) > world.tuning.exit.radius + world.tuning.probe.radius) {
+  if (
+    Math.hypot(exit.x - p.x, exit.y - p.y) >
+    world.tuning.exit.radius + world.tuning.probe.radius
+  ) {
     return;
   }
   s.status = 'complete';
@@ -60,7 +63,10 @@ export function destroyProbe(world: World): void {
 
 /** Pendant l'implosion : reprise au point de contrôle une fois la durée écoulée. */
 export function updateDying(world: World): void {
-  if (world.state.status === 'dying' && world.state.statusTimer >= world.tuning.probe.destroyedDuration) {
+  if (
+    world.state.status === 'dying' &&
+    world.state.statusTimer >= world.tuning.probe.destroyedDuration
+  ) {
     respawn(world);
   }
 }

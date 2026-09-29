@@ -115,7 +115,12 @@ export function parseLevel(src: LevelSource): ParseResult {
       }
       const kind = legendKind(ch);
       if (kind === null) {
-        errors.push({ code: 'E02', message: `caractère inconnu « ${ch} »`, row: y + 1, col: x + 1 });
+        errors.push({
+          code: 'E02',
+          message: `caractère inconnu « ${ch} »`,
+          row: y + 1,
+          col: x + 1,
+        });
         continue;
       }
       switch (kind) {

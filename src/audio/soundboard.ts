@@ -595,7 +595,9 @@ export function mountSoundboard(root: HTMLElement, audio: AudioSystem): void {
       currentStrength01: cont.current ? 1 : 0,
       inMud: cont.mud,
       leviathanPathDistance: cont.leviathan ? cont.leviathanDistance : null,
-      leviathanPos: cont.leviathan ? { x: LISTENER.x - cont.leviathanDistance * 0.5, y: LISTENER.y } : null,
+      leviathanPos: cont.leviathan
+        ? { x: LISTENER.x - cont.leviathanDistance * 0.5, y: LISTENER.y }
+        : null,
       huntingCreatures: cont.hunt ? cont.huntCount : 0,
       hullCritical: cont.hull,
       charge01,

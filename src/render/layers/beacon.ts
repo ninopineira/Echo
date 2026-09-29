@@ -57,8 +57,10 @@ function drawEdgeMarker(v: View, tx: number, ty: number, a: number): void {
   const cy = v.h / 2;
   const ang = Math.atan2(ty - cy, tx - cx);
   const margin = 26;
-  const kx = Math.abs(Math.cos(ang)) > 1e-6 ? (v.w / 2 - margin) / Math.abs(Math.cos(ang)) : Infinity;
-  const ky = Math.abs(Math.sin(ang)) > 1e-6 ? (v.h / 2 - margin) / Math.abs(Math.sin(ang)) : Infinity;
+  const kx =
+    Math.abs(Math.cos(ang)) > 1e-6 ? (v.w / 2 - margin) / Math.abs(Math.cos(ang)) : Infinity;
+  const ky =
+    Math.abs(Math.sin(ang)) > 1e-6 ? (v.h / 2 - margin) / Math.abs(Math.sin(ang)) : Infinity;
   const k = Math.min(kx, ky);
   const x = cx + Math.cos(ang) * k;
   const y = cy + Math.sin(ang) * k;

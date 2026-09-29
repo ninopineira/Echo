@@ -77,7 +77,12 @@ export function emitPulse(world: World, kind: PulseKind): Pulse {
   if (t.energy.enabled) p.energy = Math.max(0, p.energy - cfg.energyCost);
   const pos = { x: ox, y: oy };
   world.events.push({ type: 'pulseEmitted', kind, pos });
-  world.events.push({ type: 'pulseEchoes', origin: pos, kind, echoes: computeEchoes(world, pulse) });
+  world.events.push({
+    type: 'pulseEchoes',
+    origin: pos,
+    kind,
+    echoes: computeEchoes(world, pulse),
+  });
   addNoise(world, ox, oy, cfg.loudness, 'pulse');
   return pulse;
 }

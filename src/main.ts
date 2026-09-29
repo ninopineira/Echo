@@ -28,7 +28,14 @@ if (params.soundboard) {
   // Table d'écoute de développement (?soundboard=1) à la place du jeu.
   mountSoundboard(uiRoot, audio);
 } else {
-  const app = new App(new Renderer(canvas), new KeyboardInput(window), audio, store, loadSave(store), params);
+  const app = new App(
+    new Renderer(canvas),
+    new KeyboardInput(window),
+    audio,
+    store,
+    loadSave(store),
+    params,
+  );
   app.attachUi((callbacks) => createUi(uiRoot, callbacks));
   app.start();
 }

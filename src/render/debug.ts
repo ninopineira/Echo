@@ -47,7 +47,14 @@ export function drawCreatureDebug(v: View, world: World): void {
     const y = sy(v, c.pos.y);
     ctx.strokeStyle = withAlpha(PALETTE.creatureRim, 0.9);
     ctx.beginPath();
-    ctx.arc(x, y, (c.kind === 'guetteur' ? world.tuning.guetteur.radius : world.tuning.leviathan.radius) * v.scale, 0, Math.PI * 2);
+    ctx.arc(
+      x,
+      y,
+      (c.kind === 'guetteur' ? world.tuning.guetteur.radius : world.tuning.leviathan.radius) *
+        v.scale,
+      0,
+      Math.PI * 2,
+    );
     ctx.stroke();
     if (c.kind !== 'guetteur') continue;
     ctx.setLineDash([4, 6]);

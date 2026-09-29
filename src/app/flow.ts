@@ -1,13 +1,7 @@
 /** Machine d'états des écrans (ARCHITECTURE § 8), pure et testée. */
 
 export type Screen =
-  | 'title'
-  | 'levelSelect'
-  | 'playing'
-  | 'pause'
-  | 'levelEnd'
-  | 'victory'
-  | 'options';
+  'title' | 'levelSelect' | 'playing' | 'pause' | 'levelEnd' | 'victory' | 'options';
 
 export interface FlowState {
   screen: Screen;
@@ -37,12 +31,18 @@ export function initialFlow(): FlowState {
 
 /** Transition ; une action sans effet dans l'écran courant renvoie l'état inchangé. */
 export function reduce(state: FlowState, action: FlowAction): FlowState {
-  const to = (screen: Screen, extra: Partial<FlowState> = {}): FlowState => ({ ...state, screen, ...extra });
+  const to = (screen: Screen, extra: Partial<FlowState> = {}): FlowState => ({
+    ...state,
+    screen,
+    ...extra,
+  });
   switch (state.screen) {
     case 'title':
       if (state.titlePhase === 'pressKey') {
         if (action.type !== 'anyKey') return state;
-        return action.directLevel ? to('playing', { titlePhase: 'menu' }) : { ...state, titlePhase: 'menu' };
+        return action.directLevel
+          ? to('playing', { titlePhase: 'menu' })
+          : { ...state, titlePhase: 'menu' };
       }
       if (action.type === 'play') return to('levelSelect');
       if (action.type === 'openOptions') return to('options', { optionsReturn: 'title' });

@@ -34,7 +34,11 @@ describe('charge de l’impulsion', () => {
 
   it('le maintien déclenche seul l’impulsion longue à longChargeTime', () => {
     const w = worldFromGrid(ROOM);
-    const events = run(w, seconds(TUNING.pulse.longChargeTime) + 2, input({ pulsePressed: true, pulseHeld: true }));
+    const events = run(
+      w,
+      seconds(TUNING.pulse.longChargeTime) + 2,
+      input({ pulsePressed: true, pulseHeld: true }),
+    );
     const emitted = events.filter((e) => e.type === 'pulseEmitted');
     expect(emitted).toHaveLength(1);
     expect(emitted[0]).toMatchObject({ kind: 'long' });

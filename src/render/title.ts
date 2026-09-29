@@ -29,7 +29,10 @@ export class TitleBackdrop {
       const a = (i / POINTS) * TAU;
       const r =
         base *
-        (1 + 0.16 * Math.sin(3 * a + 1.3) + 0.09 * Math.sin(7 * a + 0.4) + 0.04 * Math.sin(17 * a + 2));
+        (1 +
+          0.16 * Math.sin(3 * a + 1.3) +
+          0.09 * Math.sin(7 * a + 0.4) +
+          0.04 * Math.sin(17 * a + 2));
       this.outline[i * 2] = cx + Math.cos(a) * r * (w > h ? 1.25 : 1);
       this.outline[i * 2 + 1] = cy + Math.sin(a) * r * 0.78;
     }
@@ -69,7 +72,12 @@ export class TitleBackdrop {
       for (let k = 0; k < 24; k++) {
         const a1 = (k / 24) * TAU;
         const a2 = ((k + 1) / 24) * TAU;
-        add(p.x + Math.cos(a1) * p.r, p.y + Math.sin(a1) * p.r, p.x + Math.cos(a2) * p.r, p.y + Math.sin(a2) * p.r);
+        add(
+          p.x + Math.cos(a1) * p.r,
+          p.y + Math.sin(a1) * p.r,
+          p.x + Math.cos(a2) * p.r,
+          p.y + Math.sin(a2) * p.r,
+        );
       }
     }
     batch.draw(ctx, PALETTE.sonar, 1, 0.7);

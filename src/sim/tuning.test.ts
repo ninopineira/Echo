@@ -4,7 +4,10 @@ import { mergeTuning } from './tuning';
 
 describe('mergeTuning', () => {
   it('applique les surcharges en profondeur sans toucher la base', () => {
-    const merged = mergeTuning(TUNING, { guetteur: { hearingRadius: 42 }, energy: { enabled: true } });
+    const merged = mergeTuning(TUNING, {
+      guetteur: { hearingRadius: 42 },
+      energy: { enabled: true },
+    });
     expect(merged.guetteur.hearingRadius).toBe(42);
     expect(merged.guetteur.huntSpeed).toBe(TUNING.guetteur.huntSpeed);
     expect(merged.energy.enabled).toBe(true);

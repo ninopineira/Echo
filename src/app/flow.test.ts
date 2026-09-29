@@ -7,7 +7,10 @@ function play(...actions: FlowAction[]): FlowState {
 
 describe('flux des écrans', () => {
   it('titre → touche → menu → sélection → partie → pause → reprise', () => {
-    expect(play({ type: 'anyKey', directLevel: false })).toMatchObject({ screen: 'title', titlePhase: 'menu' });
+    expect(play({ type: 'anyKey', directLevel: false })).toMatchObject({
+      screen: 'title',
+      titlePhase: 'menu',
+    });
     const s = play(
       { type: 'anyKey', directLevel: false },
       { type: 'play' },
@@ -26,7 +29,10 @@ describe('flux des écrans', () => {
   it('les options reviennent à l’écran d’origine', () => {
     const fromTitle = play({ type: 'anyKey', directLevel: false }, { type: 'openOptions' });
     expect(fromTitle.screen).toBe('options');
-    expect(reduce(fromTitle, { type: 'back' })).toMatchObject({ screen: 'title', titlePhase: 'menu' });
+    expect(reduce(fromTitle, { type: 'back' })).toMatchObject({
+      screen: 'title',
+      titlePhase: 'menu',
+    });
     const fromPause = play(
       { type: 'anyKey', directLevel: true },
       { type: 'pause' },

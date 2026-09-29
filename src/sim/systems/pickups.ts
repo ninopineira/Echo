@@ -42,7 +42,11 @@ export function updateLevers(world: World): void {
   for (const lever of s.levers) {
     if (lever.pulled || Math.hypot(lever.x - p.x, lever.y - p.y) > reach) continue;
     lever.pulled = true;
-    world.events.push({ type: 'leverPulled', pos: { x: lever.x, y: lever.y }, letter: lever.letter });
+    world.events.push({
+      type: 'leverPulled',
+      pos: { x: lever.x, y: lever.y },
+      letter: lever.letter,
+    });
     world.level.doors.forEach((def, i) => {
       const door = s.doors[i]!;
       if (def.letter !== lever.letter || door.opening || door.progress >= 1) return;
