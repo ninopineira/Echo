@@ -32,7 +32,10 @@ describe('écoute', () => {
     w.state.probe.pos = { x: 12.5, y: 1.5 };
     const origin = { ...w.state.probe.pos };
     const events = run(w, 1, input({ pulsePressed: true, pulseReleased: true }));
-    expect(events.find((e) => e.type === 'creatureAlerted')).toMatchObject({ id: g.id, target: origin });
+    expect(events.find((e) => e.type === 'creatureAlerted')).toMatchObject({
+      id: g.id,
+      target: origin,
+    });
     expect(g.mode).toBe('alert');
     // La sonde s'éloigne ; le Guetteur va quand même à l'origine du bruit.
     w.state.probe.pos = { x: 30.5, y: 4.5 };
@@ -40,7 +43,9 @@ describe('écoute', () => {
     expect(g.mode).toBe('hunt');
     run(w, seconds(4));
     expect(g.mode).toBe('search');
-    expect(Math.hypot(g.pos.x - origin.x, g.pos.y - origin.y)).toBeLessThan(TUNING.guetteur.searchRadius + 1);
+    expect(Math.hypot(g.pos.x - origin.x, g.pos.y - origin.y)).toBeLessThan(
+      TUNING.guetteur.searchRadius + 1,
+    );
   });
 
   it('n’entend pas au-delà de hearingRadius × loudness', () => {
@@ -65,6 +70,23 @@ describe('écoute', () => {
     w.state.probe.pos = { x: 11.5, y: 1.5 };
     run(w, 1, input({ pulsePressed: true, pulseReleased: true }));
     expect(guetteur(w).mode).toBe('wander');
+  });
+
+  it('entend le grondement d’une porte qui s’ouvre, émis depuis la porte encore fermée', () => {
+    const w = worldFromGrid(`
+      ##############################
+      #Sa.................A........#
+      #...................A.....G..#
+      #...........................X#
+      ##############################
+    `);
+    const g = guetteur(w);
+    // La porte coupe la salle : le Guetteur n'est joignable qu'à travers elle (ou par le bas).
+    w.state.probe.pos = { x: 2.5, y: 1.5 };
+    const events = run(w, 2);
+    expect(events.some((e) => e.type === 'doorOpening')).toBe(true);
+    expect(events.find((e) => e.type === 'creatureAlerted')).toMatchObject({ id: g.id });
+    expect(g.target?.x).toBeCloseTo(20.5);
   });
 
   it('une impulsion longue porte plus loin', () => {
@@ -94,7 +116,9 @@ describe('Guetteur', () => {
     run(b, seconds(20));
     const ga = guetteur(a);
     expect(ga.pos).toEqual(guetteur(b).pos);
-    expect(Math.hypot(ga.pos.x - ga.home.x, ga.pos.y - ga.home.y)).toBeLessThan(TUNING.guetteur.wanderRadius + 1);
+    expect(Math.hypot(ga.pos.x - ga.home.x, ga.pos.y - ga.home.y)).toBeLessThan(
+      TUNING.guetteur.wanderRadius + 1,
+    );
   });
 
   it('cliquette quand la sonde est proche', () => {
@@ -128,6 +152,31 @@ describe('Léviathan', () => {
     expect(l.pos.x).toBeGreaterThan(x0 + 1.5);
   });
 
+  it('suit un couloir en coude sans couper les angles ni rester coincé', () => {
+    const w = worldFromGrid(`
+      ####################
+      #L......############
+      #.......############
+      ####..##############
+      ####..##############
+      ####..........S...X#
+      ####...............#
+      ####################
+    `);
+    const l = leviathan(w);
+    l.awake = true;
+    // Mord d'un cheveu sur la roche, comme après un angle coupé : il doit repartir.
+    l.pos = { x: 6.0002, y: 3.5 };
+    let inRock = 0;
+    for (let i = 0; i < seconds(6); i++) {
+      run(w, 1);
+      if (w.level.rock[Math.floor(l.pos.y) * w.level.width + Math.floor(l.pos.x)] === 1) inRock++;
+    }
+    expect(inRock).toBeLessThan(seconds(0.1));
+    expect(l.pos.y).toBeGreaterThan(5);
+    expect(l.pos.x).toBeGreaterThan(7);
+  });
+
   it('chaque impulsion lui donne un élan qui décroît', () => {
     const w = worldFromGrid(RACE);
     const l = leviathan(w);
@@ -147,6 +196,8 @@ describe('Léviathan', () => {
     expect(events.some((e) => e.type === 'probeDestroyed')).toBe(true);
     run(w, seconds(TUNING.probe.destroyedDuration + 0.1));
     const back = leviathan(w);
-    expect(w.state.probe.pos.x - back.pos.x).toBeGreaterThanOrEqual(TUNING.leviathan.respawnDistance - 1);
+    expect(w.state.probe.pos.x - back.pos.x).toBeGreaterThanOrEqual(
+      TUNING.leviathan.respawnDistance - 1,
+    );
   });
 });

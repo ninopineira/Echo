@@ -14,7 +14,7 @@ import { defineLevel } from './define';
 export default defineLevel({
   id: 'le-guetteur',
   name: 'Le Guetteur',
-  hint: "Les créatures chassent au son. Émettez loin d'elles, puis changez de place.",
+  hint: 'Les créatures chassent au son. Émettez loin d’elles, puis changez de place.',
   grid: `
     ####################################################################
     ####################################################################

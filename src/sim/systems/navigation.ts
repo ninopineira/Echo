@@ -6,19 +6,19 @@ const MAX_CACHED_FIELDS = 96;
 
 /**
  * Champ de distance mis en cache par (case source, profil, version des portes) (ARCHITECTURE § 4.6).
- * Profil « sound » : vase × soundCostMultiplier ; « swim » : vase × 2.
+ * Profil « sound » : vase × soundCostMultiplier ; « swim » : vase × swimCostMultiplier.
  */
 export function cachedField(world: World, source: number, profile: NavProfile): Float32Array {
   const key = `${source}:${profile}:${world.state.doorsVersion}`;
   let field = world.navCache.get(key);
   if (!field) {
     if (world.navCache.size >= MAX_CACHED_FIELDS) world.navCache.clear();
-    field = distanceField(
-      world.level,
-      (d) => isDoorOpen(world, d),
-      source,
-      { mud: profile === 'sound' ? world.tuning.mud.soundCostMultiplier : 2 },
-    );
+    field = distanceField(world.level, (d) => isDoorOpen(world, d), source, {
+      mud:
+        profile === 'sound'
+          ? world.tuning.mud.soundCostMultiplier
+          : world.tuning.mud.swimCostMultiplier,
+    });
     world.navCache.set(key, field);
   }
   return field;
@@ -33,6 +33,7 @@ export function soundDistance(world: World, from: Vec2, to: Vec2): number {
 /**
  * Prochain point de passage vers `target` en descendant le champ de nage de la cible :
  * centre de la case voisine la plus proche de la cible, ou la cible elle-même si on y est.
+ * Une créature qui a mordu sur une case bloquée (angle coupé) repart de la meilleure voisine.
  */
 export function nextWaypoint(world: World, pos: Vec2, target: Vec2): Vec2 | null {
   const level = world.level;
@@ -40,7 +41,6 @@ export function nextWaypoint(world: World, pos: Vec2, target: Vec2): Vec2 | null
   const here = cellAt(level, pos.x, pos.y);
   if (here === targetCell) return target;
   const field = cachedField(world, targetCell, 'swim');
-  if (!Number.isFinite(field[here]!)) return null;
   const x = here % level.width;
   const y = (here - x) / level.width;
   let best = here;
@@ -51,6 +51,11 @@ export function nextWaypoint(world: World, pos: Vec2, target: Vec2): Vec2 | null
       const nx = x + dx;
       const ny = y + dy;
       if (nx < 0 || ny < 0 || nx >= level.width || ny >= level.height) continue;
+      // Même règle que Dijkstra : pas de diagonale qui rase un coin bloqué.
+      if (dx !== 0 && dy !== 0) {
+        if (!Number.isFinite(field[y * level.width + nx]!)) continue;
+        if (!Number.isFinite(field[ny * level.width + x]!)) continue;
+      }
       const v = field[ny * level.width + nx]!;
       if (v < bestValue) {
         bestValue = v;
@@ -58,6 +63,7 @@ export function nextWaypoint(world: World, pos: Vec2, target: Vec2): Vec2 | null
       }
     }
   }
+  if (!Number.isFinite(bestValue)) return null;
   if (best === here) return target;
   const bx = best % level.width;
   return { x: bx + 0.5, y: (best - bx) / level.width + 0.5 };

@@ -9,6 +9,20 @@ import { sx, sy, type View } from '../view';
 /** Points d'impact (x, y) de chaque rayon, calculés une fois par impulsion. */
 const impactCache = new WeakMap<Pulse, Float32Array>();
 
+/** Amplitude (cases) du relief ajouté au dessin des parois ; la collision reste exacte. */
+const WALL_RELIEF = 0.07;
+
+/**
+ * Relief lisse et fixe dans l'espace, dans [-1, 1] : une même paroi garde la même forme d'une
+ * impulsion à l'autre, sans le crénelage d'un bruit tiré au hasard par rayon.
+ */
+function relief(x: number, y: number): number {
+  return (
+    0.6 * Math.sin(x * 2.3 + y * 1.1) * Math.cos(y * 1.9 - x * 0.7) +
+    0.4 * Math.sin(x * 5.3 - y * 4.1 + 1.7)
+  );
+}
+
 function impacts(pulse: Pulse): Float32Array {
   let pts = impactCache.get(pulse);
   if (!pts) {
@@ -16,8 +30,15 @@ function impacts(pulse: Pulse): Float32Array {
     pts = new Float32Array(n * 2);
     for (let i = 0; i < n; i++) {
       const a = (i * TAU) / n;
-      pts[i * 2] = pulse.ox + Math.cos(a) * pulse.hitDist[i]!;
-      pts[i * 2 + 1] = pulse.oy + Math.sin(a) * pulse.hitDist[i]!;
+      const cos = Math.cos(a);
+      const sin = Math.sin(a);
+      const d = pulse.hitDist[i]!;
+      const x = pulse.ox + cos * d;
+      const y = pulse.oy + sin * d;
+      // Le relief pousse le point le long du rayon : la roche ondule à peine, les portes restent droites.
+      const r = pulse.hitSurface[i] === SURFACE_ROCK ? WALL_RELIEF * relief(x, y) : 0;
+      pts[i * 2] = x + cos * r;
+      pts[i * 2 + 1] = y + sin * r;
     }
     impactCache.set(pulse, pts);
   }

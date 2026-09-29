@@ -12,7 +12,7 @@ import { defineLevel } from './define';
 export default defineLevel({
   id: 'meandres',
   name: 'Méandres',
-  hint: "Maintenez Espace : l'impulsion longue porte bien plus loin.",
+  hint: 'Maintenez Espace : l’impulsion longue porte bien plus loin.',
   grid: `
     ####################################################
     ####################################################

@@ -103,17 +103,27 @@ export const TUNING = {
     dragMultiplier: 4,
     /** Coût de propagation du son à travers une case de vase (1 = eau libre). */
     soundCostMultiplier: 3,
+    /** Coût de nage d'une case de vase pour les trajets des créatures (1 = eau libre). */
+    swimCostMultiplier: 2,
+    /** Facteur de vitesse d'un Guetteur dans la vase. */
+    creatureSpeedFactor: 0.5,
   },
 
   lure: {
     pickupRadius: 0.5,
+    /** Rayon de collision du leurre en vol (cases). */
+    radius: 0.12,
     maxCarried: 3,
     throwSpeed: 7,
+    /** Part de la vitesse de la sonde transmise au leurre lancé. */
+    inheritVelocity: 0.5,
     drag: 2.5,
     restitution: 0.4,
     /** Vitesse sous laquelle le leurre s'immobilise et commence à émettre. */
     stopSpeed: 0.3,
     pings: 3,
+    /** Délai entre l'arrêt du leurre et son premier ping (s). */
+    firstPingDelay: 0.25,
     pingInterval: 1,
     loudness: 1.6,
   },
@@ -208,15 +218,21 @@ export interface LevelTuning {
  */
 export const LEVELS: Record<string, LevelTuning> = {
   'premier-echo': { par: 10, beaconInterval: 2 },
-  // Valeurs prévues par le GDD § 7.2, à activer (décommenter) avec leur niveau : une entrée
-  // sans niveau dans le catalogue est une erreur E06.
   meandres: { par: 9, beaconInterval: 3 },
   oursins: { par: 11, beaconInterval: 3.5 },
   courants: { par: 11, beaconInterval: 4 },
-  'le-guetteur': { par: 12, beaconInterval: 4, overrides: { guetteur: { hearingRadius: 8, huntSpeed: 3.2 } } },
-  // leurres: { par: 11, beaconInterval: 4.5 },
-  // vannes: { par: 16, beaconInterval: 5 },
-  // vase: { par: 14, beaconInterval: 5.5, overrides: { guetteur: { huntSpeed: 3.8 } } },
-  // 'batterie-faible': { par: 15, beaconInterval: 6, overrides: { energy: { enabled: true }, guetteur: { hearingRadius: 10, huntSpeed: 3.9 } } },
-  // leviathan: { par: 12, beaconInterval: 3, overrides: { energy: { enabled: true, regen: 6 } } },
+  'le-guetteur': {
+    par: 12,
+    beaconInterval: 4,
+    overrides: { guetteur: { hearingRadius: 8, huntSpeed: 3.2 } },
+  },
+  leurres: { par: 12, beaconInterval: 4.5 },
+  vannes: { par: 20, beaconInterval: 5 },
+  vase: { par: 15, beaconInterval: 5.5, overrides: { guetteur: { huntSpeed: 3.8 } } },
+  'batterie-faible': {
+    par: 26,
+    beaconInterval: 6,
+    overrides: { energy: { enabled: true }, guetteur: { hearingRadius: 10, huntSpeed: 3.9 } },
+  },
+  leviathan: { par: 21, beaconInterval: 3, overrides: { energy: { enabled: true, regen: 6 } } },
 };

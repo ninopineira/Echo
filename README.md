@@ -71,6 +71,8 @@ Le format complet est décrit dans `docs/LEVEL_FORMAT.md`. En résumé :
 
 Toutes les valeurs d'équilibrage sont dans `src/data/tuning.ts` : valeurs globales dans `TUNING`, valeurs par niveau (par, intervalle de la balise, surcharges) dans `LEVELS`. Chaque clé est commentée avec son unité (cases, secondes). Pendant `npm run dev`, enregistrer ce fichier relance le niveau en cours avec les nouvelles valeurs.
 
+`docs/BALANCING.md` récapitule les par et intervalles actuels, et liste niveau par niveau les points à juger en jouant.
+
 ## Outils de test
 
 | Paramètre d'URL | Effet |
@@ -85,7 +87,8 @@ Toutes les valeurs d'équilibrage sont dans `src/data/tuning.ts` : valeurs globa
 En développement, les touches de debug sont toujours actives : F1 affiche l'overlay (images par seconde, états des créatures, journal des événements), F2 la révélation permanente, F3 le mode sans dégât, F4 relance le niveau.
 
 ```
-npm run check      # typecheck, lint, tests et validation des niveaux
+npm run check      # typecheck, lint, format, tests et validation des niveaux
+npm run format     # remet le code au format Prettier
 ```
 
 ## Documentation
@@ -95,3 +98,4 @@ npm run check      # typecheck, lint, tests et validation des niveaux
 - `docs/LEVEL_FORMAT.md` : format des niveaux et règles de validation
 - `docs/ROADMAP.md` : feuille de route
 - `docs/DECISIONS.md` : décisions
+- `docs/BALANCING.md` : état de l'équilibrage et points à tester

@@ -16,7 +16,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "validate-levels": "tsx scripts/validate-levels.ts",
-    "check": "npm run typecheck && npm run lint && npm run test && npm run validate-levels",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm run test && npm run validate-levels",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

@@ -89,6 +89,13 @@ export class Director {
   private readonly hull: HullLayer;
   private readonly charge: ChargeLayer;
   private nextCrackle: number | null = null;
+  /** Voix planifiées au-delà de SCHEDULE.horizon, créées par update() à l'approche de leur heure. */
+  private readonly deferred: {
+    family: VoiceFamily;
+    place: Placement;
+    when: number;
+    build: Build;
+  }[] = [];
 
   constructor(engine: AudioEngine) {
     this.engine = engine;
@@ -109,6 +116,7 @@ export class Director {
 
   update(ambient: AmbientModel | null): void {
     const now = this.engine.now;
+    this.flushDeferred(now);
     this.engine.setMuffled(ambient?.inMud ?? false);
     this.bed.set(ambient !== null, now);
     this.current.set(ambient?.currentStrength01 ?? 0, now);
@@ -156,6 +164,7 @@ export class Director {
       pool.length = 0;
     }
     this.doors.clear();
+    this.deferred.length = 0;
     this.charge.cut(now);
   }
 
@@ -398,7 +407,7 @@ export class Director {
         wet: distanceSend(e.distance, SEND.echoNear, SEND.echoFar, SEND.farDistance),
         bus: 'game',
       };
-      this.spawn('echo', place, at, (v, o) => {
+      this.spawnLater('echo', place, at, (v, o) => {
         echo(v, o, at, e.surface, { pitch: jitter(ECHO.pitchJitter), long });
       });
     });
@@ -446,6 +455,21 @@ export class Director {
    * Crée une voix : recette → gain (niveau, mono) → passe-bas de brillance → pan → bus
    * (sec et humide), puis applique le plafond de la famille.
    */
+  /** Comme spawn, mais diffère la création si la voix sonne au-delà de SCHEDULE.horizon. */
+  private spawnLater(family: VoiceFamily, place: Placement, when: number, build: Build): void {
+    if (when - this.engine.now <= SCHEDULE.horizon) this.spawn(family, place, when, build);
+    else this.deferred.push({ family, place, when, build });
+  }
+
+  private flushDeferred(now: number): void {
+    let kept = 0;
+    for (const d of this.deferred) {
+      if (d.when - now <= SCHEDULE.horizon) this.spawn(d.family, d.place, d.when, d.build);
+      else this.deferred[kept++] = d;
+    }
+    this.deferred.length = kept;
+  }
+
   private spawn(family: VoiceFamily, place: Placement, when: number, build: Build): void {
     if (place.level < SCHEDULE.minLevel) return;
     const { ctx, noise } = this.engine;

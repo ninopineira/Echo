@@ -75,6 +75,11 @@ export const MUD = {
 /** Avance de planification : un son « immédiat » part à currentTime + lead. */
 export const SCHEDULE = {
   lead: 0.01,
+  /**
+   * Horizon de création (s) : une voix qui sonne plus tard est créée au fil des images, juste
+   * avant son heure, pour ne pas bâtir tous les échos d'une impulsion dans la même image.
+   */
+  horizon: 0.15,
   /** Sous ce gain, une voix n'est pas créée. */
   minLevel: 0.0005,
   /** Au-dessus de cette coupure, pas de filtre de brillance sur la voix. */

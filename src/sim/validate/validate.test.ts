@@ -22,7 +22,11 @@ function check(
 ): { codes: string[]; errors: string[]; report: ReturnType<typeof validateLevel> } {
   const report = validateLevel(
     source(grid, 'fixture'),
-    { par: opts.par ?? 5, beaconInterval: 3, ...(opts.overrides ? { overrides: opts.overrides } : {}) },
+    {
+      par: opts.par ?? 5,
+      beaconInterval: 3,
+      ...(opts.overrides ? { overrides: opts.overrides } : {}),
+    },
     TUNING,
     opts.position ?? null,
   );
@@ -102,6 +106,28 @@ describe('validateLevel', () => {
     ).toContain('E11');
   });
 
+  it('perle entourée de vase (E11)', () => {
+    expect(
+      check(`
+        #########
+        #S.~~~.X#
+        #..~o~..#
+        #..~~~..#
+        #########
+      `).errors,
+    ).toContain('E11');
+  });
+
+  it('Léviathan trop proche du départ (E13)', () => {
+    const grid = (gap: string): string => `
+      ##############################
+      #So${gap}L${'.'.repeat(24 - gap.length)}X#
+      ##############################
+    `;
+    expect(check(grid('.'.repeat(5))).errors).toContain('E13');
+    expect(check(grid('.'.repeat(20))).errors).not.toContain('E13');
+  });
+
   it('Guetteur trop proche du départ (E12)', () => {
     expect(
       check(`
@@ -139,7 +165,11 @@ describe('validateLevel', () => {
 describe('validateCatalog', () => {
   it('signale les doublons (E05), les entrées manquantes et orphelines (E06)', () => {
     const lvl = source(EXAMPLE, 'exemple');
-    const report = validateCatalog([lvl, lvl], { orpheline: { par: 3, beaconInterval: 2 } }, TUNING);
+    const report = validateCatalog(
+      [lvl, lvl],
+      { orpheline: { par: 3, beaconInterval: 2 } },
+      TUNING,
+    );
     const levelCodes = report.reports.flatMap((r) => r.diagnostics.map((d) => d.code));
     expect(levelCodes).toContain('E05');
     expect(levelCodes).toContain('E06');

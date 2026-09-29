@@ -14,7 +14,7 @@ import { defineLevel } from './define';
 export default defineLevel({
   id: 'courants',
   name: 'Courants',
-  hint: "Les courants vous portent. L'impulsion les révèle en stries.",
+  hint: 'Les courants vous portent. L’impulsion les révèle en stries.',
   grid: `
     ################################################################
     ################################################################

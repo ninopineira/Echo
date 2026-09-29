@@ -112,61 +112,61 @@ Jouable : niveaux 1 à 5. Le Guetteur erre, entend, fonce vers l'origine du brui
 
 Jouable : niveaux 1 à 6.
 
-- [ ] `systems/lures.ts` : capsules, réserve, lancer (E), rebonds, dérive dans les courants, pings et bruit ; clic sans leurre ; tests
-- [ ] Rendu : capsules, leurre en vol, anneaux de ping ivoire à travers les parois ; « Leurres n » dans le HUD
-- [ ] Sons : lancer, rebond, ping, capsule ramassée, écho de capsule
-- [ ] Validation : W03
-- [ ] Niveau 6 `leurres` (2 Guetteurs, 3 capsules)
+- [x] `systems/lures.ts` : capsules, réserve, lancer (E), rebonds, dérive dans les courants, pings et bruit ; clic sans leurre ; tests
+- [x] Rendu : capsules, leurre en vol, anneaux de ping ivoire à travers les parois ; « Leurres n » dans le HUD
+- [x] Sons : lancer, rebond, ping, capsule ramassée, écho de capsule
+- [x] Validation : W03
+- [x] Niveau 6 `leurres` (2 Guetteurs, 3 capsules)
 
 ## M8 — Vannes et points de contrôle (niveau 7)
 
 Jouable : niveaux 1 à 7. Leviers, portes et reprise au point de contrôle.
 
-- [ ] `systems/doors.ts` : leviers, ouverture progressive, géométrie désactivée, bruit de porte, invalidation de `nav` ; tests
-- [ ] Points de contrôle : activation, instantané, reprise (perles perdues après le point, stats conservées), « Revenir au point de contrôle » dans la pause ; tests
-- [ ] Rendu : portes hachurées, leviers, halo des points de contrôle actifs
-- [ ] Sons : levier, grondement de porte positionné, point de contrôle, écho métallique
-- [ ] Validation : E09, E10, point fixe des portes, E08 pour les leviers et points de contrôle ; tests
-- [ ] Niveau 7 `vannes`
+- [x] `systems/doors.ts` : leviers, ouverture progressive, géométrie désactivée, bruit de porte, invalidation de `nav` ; tests
+- [x] Points de contrôle : activation, instantané, reprise (perles perdues après le point, stats conservées), « Revenir au point de contrôle » dans la pause ; tests
+- [x] Rendu : portes hachurées, leviers, halo des points de contrôle actifs
+- [x] Sons : levier, grondement de porte positionné, point de contrôle, écho métallique
+- [x] Validation : E09, E10, point fixe des portes, E08 pour les leviers et points de contrôle ; tests
+- [x] Niveau 7 `vannes`
 
 ## M9 — Vase (niveau 8)
 
 Jouable : niveaux 1 à 8.
 
-- [ ] Vase : frottement de la sonde, Guetteur ralenti, coût du son dans `nav` ; tests (absorption déjà faite en M1)
-- [ ] Rendu : l'anneau s'éteint net sur la vase, aucun dessin de vase hors debug
-- [ ] Son : étouffement quand la sonde est dans la vase (`AmbientModel.inMud`)
-- [ ] Validation : E11 (perle dans la vase)
-- [ ] Niveau 8 `vase`
+- [x] Vase : frottement de la sonde, Guetteur ralenti, coût du son dans `nav` ; tests (absorption déjà faite en M1)
+- [x] Rendu : l'anneau s'éteint net sur la vase, aucun dessin de vase hors debug
+- [x] Son : étouffement quand la sonde est dans la vase (`AmbientModel.inMud`)
+- [x] Validation : E11 (perle dans la vase)
+- [x] Niveau 8 `vase`
 
 ## M10 — Batterie faible (niveau 9)
 
 Jouable : niveaux 1 à 9.
 
-- [ ] `systems/energy.ts` : coût, recharge, refus ; activation par `LEVELS[slug].overrides` ; tests
-- [ ] HUD : jauge d'énergie (clignote au refus)
-- [ ] Son : refus pour manque d'énergie, distinct du refus pendant la recharge
-- [ ] Niveau 9 `batterie-faible`
+- [x] `systems/energy.ts` : coût, recharge, refus ; activation par `LEVELS[slug].overrides` ; tests
+- [x] HUD : jauge d'énergie (clignote au refus)
+- [x] Son : refus pour manque d'énergie, distinct du refus pendant la recharge
+- [x] Niveau 9 `batterie-faible`
 
 ## M11 — Le Léviathan et la victoire (niveau 10)
 
 Jouable : le jeu complet, du titre à la victoire.
 
-- [ ] `systems/leviathan.ts` : réveil, poursuite permanente, élan à chaque impulsion et fraction au choc, contact fatal, replacement à la reprise ; tests
-- [ ] Rendu : corps segmenté le long de sa traîne, image rémanente
-- [ ] Son : drone qui dépend de la distance de chemin, réveil
-- [ ] Validation : E13
-- [ ] Écran de victoire final (textes, totaux) après le niveau 10
-- [ ] Niveau 10 `leviathan`
+- [x] `systems/leviathan.ts` : réveil, poursuite permanente, élan à chaque impulsion et fraction au choc, contact fatal, replacement à la reprise ; tests
+- [x] Rendu : corps segmenté le long de sa traîne, image rémanente
+- [x] Son : drone qui dépend de la distance de chemin, réveil
+- [x] Validation : E13
+- [x] Écran de victoire final (textes, totaux) après le niveau 10
+- [x] Niveau 10 `leviathan`
 
 ## M12 — Finition
 
 Jouable : version livrable (`npm run build`, puis `dist/` servi en statique).
 
-- [ ] Passe d'équilibrage guidée : un tableau des par et intervalles actuels, et les points à tester à la main pour l'auteur
-- [ ] Performance : trace Chrome sur le niveau le plus lourd, budgets d'ARCHITECTURE § 12 tenus, pas de ramasse-miettes visible
-- [ ] Accessibilité : rémanence allongée vérifiée sur tous les niveaux, focus visible partout, textes lisibles à 1280 × 720
-- [ ] Polish visuel : bruit léger sur les sommets de paroi, scintillement des perles, anneaux du titre
+- [x] Passe d'équilibrage guidée : un tableau des par et intervalles actuels, et les points à tester à la main pour l'auteur (`docs/BALANCING.md`)
+- [x] Performance : trace Chrome sur le niveau le plus lourd, budgets d'ARCHITECTURE § 12 tenus, pas de ramasse-miettes visible
+- [x] Accessibilité : rémanence allongée vérifiée sur tous les niveaux, focus visible partout, textes lisibles à 1280 × 720
+- [x] Polish visuel : bruit léger sur les sommets de paroi, scintillement des perles, anneaux du titre
 - [ ] Polish sonore : équilibre du mixage, ambiance, limites de voix sous charge
-- [ ] Relecture des textes de l'UI ; `README.md` (comment jouer, comment équilibrer)
+- [x] Relecture des textes de l'UI ; `README.md` (comment jouer, comment équilibrer)
 - [ ] `npm run build` puis `npm run preview` : parcours complet sans erreur

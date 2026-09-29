@@ -11,6 +11,7 @@ Jeu 2D d'exploration au sonar : une sonde dans des grottes sous-marines noires, 
 | `docs/ARCHITECTURE.md` | modules, flux de données, contrats de types, outils de dev | avant de créer ou déplacer un module, ou de toucher un contrat |
 | `docs/LEVEL_FORMAT.md` | format des niveaux, légende, règles de validation | avant de toucher `src/data/levels/` ou `src/sim/validate/` |
 | `docs/DECISIONS.md` | décisions structurantes et choix tranchés | avant de remettre un choix en cause |
+| `docs/BALANCING.md` | par et intervalles actuels, points à tester à la main | avant une passe d'équilibrage |
 
 Ces documents font référence. Si le code doit s'en écarter, mettre à jour le document dans le même changement, et ajouter une décision numérotée dans `DECISIONS.md` si le choix est structurant.
 
@@ -19,13 +20,13 @@ Ces documents font référence. Si le code doit s'en écarter, mettre à jour le
 ```
 npm install
 npm run dev              # http://localhost:5173 — paramètres : ?level=<n|slug> &debug=1 &reveal=1 &god=1 &unlock=1 &seed=<n> &soundboard=1
-npm run check            # typecheck + lint + tests + validation des niveaux : doit passer avant de cocher une case
+npm run check            # typecheck + lint + format + tests + validation des niveaux : doit passer avant de cocher une case
 npm run typecheck        # tsc : app (DOM), node (scripts), garde-fou sim/data/save sans DOM
 npm run lint             # ESLint typé, 0 avertissement toléré
 npm test                 # vitest run ; un fichier : npx vitest run src/sim/systems/pulse.test.ts
 npm run validate-levels  # tout le catalogue ; détail : npm run validate-levels -- --verbose <slug>
 npm run build            # typecheck puis build statique dans dist/ ; npm run preview pour le servir
-npm run format           # Prettier (les .md sont exclus)
+npm run format           # Prettier (les .md sont exclus) ; npm run format:check vérifie sans écrire
 ```
 
 ## Architecture en bref
@@ -60,6 +61,7 @@ npm run format           # Prettier (les .md sont exclus)
 - Instantané de point de contrôle : copie profonde écrite à la main (`structuredClone` est interdit dans `sim`). Les statistiques de la tentative ne sont jamais restaurées.
 - Aucun dossier interne ne doit porter le nom d'une couche (`render`, `audio`, `ui`…), car les règles ESLint d'import s'appuient sur ces noms.
 - Dijkstra (`sim/nav.ts`) : calculer en double précision ; comparer des distances arrondies en float32 casse l'algorithme.
+- Navigation des créatures : `nextWaypoint` doit refuser les diagonales qui rasent un coin bloqué, comme Dijkstra, sinon le Léviathan (sans collision) se fige dans la roche. Les bruits émis depuis une case bloquée (porte) sont propagés depuis ses voisines.
 - Audio : appeler `stopGameSounds()` avant `handle()` dans une même frame, sinon le son de reprise est coupé avec le reste.
 - Tests avec Bash : `rm -rf` est refusé par les permissions ; supprimer avec `rm` fichier par fichier.
 - Canvas : DPR plafonné à 2. Pas de `shadowBlur` ni de `ctx.filter` : le halo se fait en traits additifs (`glow.ts`).

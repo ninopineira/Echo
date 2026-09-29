@@ -54,6 +54,19 @@ describe('distanceField', () => {
     expect(open[3 * 9 + 4]).toBeCloseTo(2 * Math.SQRT2 + 1);
   });
 
+  it('part des voisines quand la source est une porte fermée (grondement de porte)', () => {
+    const l = level(`
+      #########
+      #S..A..X#
+      #a..A...#
+      #########
+    `);
+    const f = distanceField(l, () => false, 1 * 9 + 4, { mud: 1 });
+    expect(f[1 * 9 + 3]).toBeCloseTo(1);
+    expect(f[1 * 9 + 5]).toBeCloseTo(1);
+    expect(f[2 * 9 + 4]).toBe(Infinity);
+  });
+
   it('borne la portée', () => {
     const l = level(`
       ############

@@ -21,7 +21,8 @@ export function processNoises(world: World): void {
     for (const c of s.creatures) {
       if (c.kind === 'leviathan') {
         if (noise.source === 'pulse') c.surge += t.leviathan.surgeSpeed;
-        else if (noise.source === 'bump') c.surge += t.leviathan.surgeSpeed * t.leviathan.bumpSurgeFactor;
+        else if (noise.source === 'bump')
+          c.surge += t.leviathan.surgeSpeed * t.leviathan.bumpSurgeFactor;
         continue;
       }
       field ??= cachedField(world, cellAt(world.level, noise.x, noise.y), 'sound');
@@ -71,7 +72,10 @@ function swimTowards(world: World, g: GuetteurState, target: Vec2, speed: number
     const dy = way.y - g.pos.y;
     const len = Math.hypot(dx, dy);
     if (len > 1e-6) {
-      const mud = world.level.mud[cellAt(world.level, g.pos.x, g.pos.y)] === 1 ? 0.5 : 1;
+      const mud =
+        world.level.mud[cellAt(world.level, g.pos.x, g.pos.y)] === 1
+          ? t.mud.creatureSpeedFactor
+          : 1;
       const arrive = way === target ? Math.min(1, len / 0.6) : 1;
       desiredX = (dx / len) * speed * mud * arrive;
       desiredY = (dy / len) * speed * mud * arrive;
@@ -225,7 +229,10 @@ function updateLeviathan(world: World, l: LeviathanState): void {
     }
   }
   if (s.status !== 'playing') return;
-  if (Math.hypot(probe.pos.x - l.pos.x, probe.pos.y - l.pos.y) < t.radius + world.tuning.probe.radius) {
+  if (
+    Math.hypot(probe.pos.x - l.pos.x, probe.pos.y - l.pos.y) <
+    t.radius + world.tuning.probe.radius
+  ) {
     world.events.push({ type: 'creatureAttack', id: l.id, pos: { x: l.pos.x, y: l.pos.y } });
     destroyProbe(world);
   }

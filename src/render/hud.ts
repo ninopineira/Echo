@@ -30,12 +30,20 @@ export function drawHud(
   const pad = 22 * k;
   ctx.save();
   ctx.textBaseline = 'top';
+  // Détourage couleur de fond : les textes restent lisibles quand une paroi passe dessous.
+  ctx.lineJoin = 'round';
+  ctx.strokeStyle = withAlpha(PALETTE.background, 0.85);
+  const label = (text: string, x: number, y: number): void => {
+    ctx.lineWidth = 5 * k;
+    ctx.strokeText(text, x, y);
+    ctx.fillText(text, x, y);
+  };
 
   // Coque : segments en parallélogramme.
   ctx.font = font(400, 13);
   ctx.fillStyle = withAlpha(PALETTE.textMuted, 0.9);
   ctx.textAlign = 'left';
-  ctx.fillText(LABELS.hull, pad, pad);
+  label(LABELS.hull, pad, pad);
   const segW = 26 * k;
   const segH = 9 * k;
   const top = pad + 20 * k;
@@ -56,6 +64,7 @@ export function drawHud(
       ctx.stroke();
     }
   }
+  ctx.strokeStyle = withAlpha(PALETTE.background, 0.85);
 
   // Compteurs à droite.
   ctx.textAlign = 'right';
@@ -67,16 +76,17 @@ export function drawHud(
     },
     { label: LABELS.pearls, value: `${hud.pearls} / ${hud.pearlsTotal}`, color: PALETTE.pearl },
   ];
-  if (hud.lures !== null) rows.push({ label: LABELS.lures, value: `${hud.lures}`, color: PALETTE.pearl });
+  if (hud.lures !== null)
+    rows.push({ label: LABELS.lures, value: `${hud.lures}`, color: PALETTE.pearl });
   rows.forEach((row, i) => {
     const y = pad + i * 26 * k;
     ctx.font = font(600, 17);
     ctx.fillStyle = withAlpha(row.color, 0.92);
     const valueW = ctx.measureText(row.value).width;
-    ctx.fillText(row.value, w - pad, y);
+    label(row.value, w - pad, y);
     ctx.font = font(400, 13);
     ctx.fillStyle = withAlpha(PALETTE.textMuted, 0.95);
-    ctx.fillText(row.label, w - pad - valueW - 10 * k, y + 3 * k);
+    label(row.label, w - pad - valueW - 10 * k, y + 3 * k);
   });
 
   // Énergie (niveaux 9 et 10).
@@ -85,11 +95,12 @@ export function drawHud(
     const barH = 8 * k;
     const x = pad;
     const y = h - pad - barH;
-    const denied = energyDeniedAge >= 0 && energyDeniedAge < 0.6 && Math.floor(energyDeniedAge * 10) % 2 === 0;
+    const denied =
+      energyDeniedAge >= 0 && energyDeniedAge < 0.6 && Math.floor(energyDeniedAge * 10) % 2 === 0;
     ctx.textAlign = 'left';
     ctx.font = font(400, 13);
     ctx.fillStyle = withAlpha(PALETTE.textMuted, 0.95);
-    ctx.fillText(LABELS.energy, x, y - 20 * k);
+    label(LABELS.energy, x, y - 20 * k);
     ctx.fillStyle = withAlpha(PALETTE.line, 1);
     ctx.fillRect(x, y, barW, barH);
     ctx.fillStyle = withAlpha(denied ? PALETTE.hazard : PALETTE.sonar, 0.85);
@@ -101,18 +112,19 @@ export function drawHud(
   const intro = t < 0.4 ? 0 : t < 0.9 ? (t - 0.4) / 0.5 : t < 4 ? 1 : Math.max(0, 1 - (t - 4) / 1);
   if (intro > 0) {
     ctx.textAlign = 'center';
+    ctx.strokeStyle = withAlpha(PALETTE.background, 0.85 * intro);
     ctx.font = font(600, 30);
     ctx.fillStyle = withAlpha(PALETTE.sonar, 0.95 * intro);
-    ctx.fillText(world.level.name, w / 2, h * 0.7);
+    label(world.level.name, w / 2, h * 0.7);
     if (world.level.hint !== '') {
       ctx.font = font(400, 18);
       ctx.fillStyle = withAlpha(PALETTE.text, 0.9 * intro);
-      ctx.fillText(world.level.hint, w / 2, h * 0.7 + 42 * k);
+      label(world.level.hint, w / 2, h * 0.7 + 42 * k);
     }
     if (controlsKeys !== null) {
       ctx.font = font(400, 16);
       ctx.fillStyle = withAlpha(PALETTE.textMuted, 0.95 * intro);
-      ctx.fillText(LABELS.controls(controlsKeys), w / 2, h * 0.7 + 74 * k);
+      label(LABELS.controls(controlsKeys), w / 2, h * 0.7 + 74 * k);
     }
   }
   ctx.restore();

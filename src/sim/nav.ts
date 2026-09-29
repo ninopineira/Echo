@@ -11,7 +11,8 @@ export interface NavCosts {
 /**
  * Champ de distance de chemin (Dijkstra, 8-voisinage, diagonale seulement si les deux cases
  * orthogonales sont libres) depuis la case `source`. Cases bloquées : roche et portes fermées.
- * Les cases hors portée valent Infinity.
+ * Les cases hors portée valent Infinity. La source elle-même peut être bloquée (grondement d'une
+ * porte qui s'ouvre, émis depuis ses cases encore fermées) : le champ part alors de ses voisines.
  */
 export function distanceField(
   level: Pick<ParsedLevel, 'width' | 'height' | 'rock' | 'door' | 'mud'>,
@@ -29,7 +30,7 @@ export function distanceField(
     const d = door[i]!;
     return d >= 0 && !isDoorOpen(d);
   };
-  if (source < 0 || source >= size || blocked(source)) return Float32Array.from(dist);
+  if (source < 0 || source >= size) return Float32Array.from(dist);
 
   // Tas binaire minimal sur (distance, case).
   const heapCell: number[] = [];

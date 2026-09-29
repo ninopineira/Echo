@@ -51,6 +51,9 @@ Une ligne de décision, une ligne de justification. On ajoute les nouvelles déc
 | D43 | Reprise au point de contrôle au centre du point, à l'arrêt | L'instantané pris au contact plaçait la sonde là où elle avait frôlé le point. |
 | D44 | Écran de fin : clavier armé après 400 ms, ouverture 1,1 s après la balise | Un Espace tapoté en touchant la balise ne saute pas l'écran, et l'éclat de la balise a le temps d'être vu. |
 | D45 | Rappel des touches de nage (lettres réelles de la disposition) sous la consigne du premier niveau | Le GDD demande d'afficher les lettres réelles ; c'est le seul niveau où les contrôles doivent être rappelés. |
+| D46 | Un champ de distance peut partir d'une case bloquée : il se propage alors depuis ses voisines | Le grondement d'une porte part de ses cases encore fermées ; sinon aucune créature ne l'entendait. |
+| D47 | `nextWaypoint` applique la règle des diagonales de Dijkstra et repart de la meilleure voisine si la créature mord sur une case bloquée | Le Léviathan, sans collision, coupait un angle, entrait d'un cheveu dans la roche et restait figé. |
+| D48 | Le par suit la longueur du niveau (bornes W04), même avec l'énergie : 20 aux Vannes, 26 à Batterie faible, 21 au Léviathan | Les niveaux 7 à 10 sont deux à trois fois plus longs que les premiers ; un par de 12 à 16 y serait sous le seuil de W04. |
 
 ## Choix de conception tranchés
 

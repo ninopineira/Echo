@@ -43,19 +43,20 @@ export interface CatalogReport {
 }
 
 /** Niveau d'introduction de chaque élément (GDD § 7.2), pour l'avertissement W06. */
-const INTRODUCED_AT: readonly { what: string; level: number; has: (l: ParsedLevel) => boolean }[] = [
-  { what: 'oursin', level: 3, has: (l) => l.hazards.length > 0 },
-  { what: 'courant', level: 4, has: (l) => l.currents.length > 0 },
-  { what: 'Guetteur', level: 5, has: (l) => l.guetteurs.length > 0 },
-  { what: 'leurre', level: 6, has: (l) => l.capsules.length > 0 },
-  {
-    what: 'levier, porte ou point de contrôle',
-    level: 7,
-    has: (l) => l.levers.length + l.doors.length + l.checkpoints.length > 0,
-  },
-  { what: 'vase', level: 8, has: (l) => l.mud.includes(1) },
-  { what: 'Léviathan', level: 10, has: (l) => l.leviathan !== null },
-];
+const INTRODUCED_AT: readonly { what: string; level: number; has: (l: ParsedLevel) => boolean }[] =
+  [
+    { what: 'oursin', level: 3, has: (l) => l.hazards.length > 0 },
+    { what: 'courant', level: 4, has: (l) => l.currents.length > 0 },
+    { what: 'Guetteur', level: 5, has: (l) => l.guetteurs.length > 0 },
+    { what: 'leurre', level: 6, has: (l) => l.capsules.length > 0 },
+    {
+      what: 'levier, porte ou point de contrôle',
+      level: 7,
+      has: (l) => l.levers.length + l.doors.length + l.checkpoints.length > 0,
+    },
+    { what: 'vase', level: 8, has: (l) => l.mud.includes(1) },
+    { what: 'Léviathan', level: 10, has: (l) => l.leviathan !== null },
+  ];
 
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
@@ -97,7 +98,9 @@ export function validateLevel(
   if (!parsed.ok) {
     for (const e of parsed.errors) {
       const where =
-        e.row !== undefined ? ` (rangée ${e.row}${e.col !== undefined ? `, colonne ${e.col}` : ''})` : '';
+        e.row !== undefined
+          ? ` (rangée ${e.row}${e.col !== undefined ? `, colonne ${e.col}` : ''})`
+          : '';
       error(e.code, `${e.message}${where}`);
     }
     return report;
@@ -126,7 +129,8 @@ export function validateLevel(
   const reach = computeReach(level, strongCurrents);
   const reached = (c: { x: number; y: number }): boolean => reach.steps[idx(c)] !== -1;
   const exitIndex = idx(level.exit);
-  if (!reached(level.exit)) error('E07', `balise ${fmt(level.exit)} inatteignable depuis le départ`);
+  if (!reached(level.exit))
+    error('E07', `balise ${fmt(level.exit)} inatteignable depuis le départ`);
   const checkReach = (what: string, cells: { x: number; y: number }[]): void => {
     for (const c of cells) if (!reached(c)) error('E08', `${what} ${fmt(c)} inatteignable`);
   };
@@ -176,7 +180,13 @@ export function validateLevel(
       }
     }
     // W05 : couloir d'une case dans le territoire.
-    const swim = distanceField(level, doorOpen, idx(g), { mud: 2 }, tuning.guetteur.wanderRadius);
+    const swim = distanceField(
+      level,
+      doorOpen,
+      idx(g),
+      { mud: tuning.mud.swimCostMultiplier },
+      tuning.guetteur.wanderRadius,
+    );
     const blocked = (x: number, y: number): boolean => {
       if (x < 0 || y < 0 || x >= width || y >= height) return true;
       const i = y * width + x;
@@ -196,10 +206,15 @@ export function validateLevel(
     }
   }
   if (level.leviathan) {
-    const field = distanceField(level, doorOpen, idx(level.leviathan), { mud: 2 });
+    const field = distanceField(level, doorOpen, idx(level.leviathan), {
+      mud: tuning.mud.swimCostMultiplier,
+    });
     const d = field[idx(level.start)]!;
     if (d < 20) {
-      error('E13', `Léviathan à ${Number.isFinite(d) ? d.toFixed(1) : '∞'} cases du départ (minimum 20)`);
+      error(
+        'E13',
+        `Léviathan à ${Number.isFinite(d) ? d.toFixed(1) : '∞'} cases du départ (minimum 20)`,
+      );
     }
   }
 
@@ -252,7 +267,10 @@ export function validateLevel(
   if (position !== null) {
     for (const intro of INTRODUCED_AT) {
       if (intro.has(level) && position < intro.level) {
-        warn('W06', `${intro.what} utilisé au niveau ${position}, introduit au niveau ${intro.level}`);
+        warn(
+          'W06',
+          `${intro.what} utilisé au niveau ${position}, introduit au niveau ${intro.level}`,
+        );
       }
     }
   }
@@ -260,9 +278,15 @@ export function validateLevel(
   const path = pathTo(reach, exitIndex);
   const pathLength = path.length > 0 ? path.length - 1 : null;
   const parSuggestion =
-    pathLength === null ? null : Math.max(1, Math.ceil(pathLength / (0.6 * tuning.pulse.short.radius)));
+    pathLength === null
+      ? null
+      : Math.max(1, Math.ceil(pathLength / (0.6 * tuning.pulse.short.radius)));
   const par = levelTuning?.par ?? null;
-  if (par !== null && parSuggestion !== null && (par < parSuggestion * 0.5 || par > parSuggestion * 2)) {
+  if (
+    par !== null &&
+    parSuggestion !== null &&
+    (par < parSuggestion * 0.5 || par > parSuggestion * 2)
+  ) {
     warn('W04', `par ${par} hors de [0,5 ; 2] × suggestion (${parSuggestion})`);
   }
   report.stats = {
@@ -288,7 +312,11 @@ export function validateCatalog(
   const reports = catalog.map((src, i) => {
     const report = validateLevel(src, levels[src.id], tuning, i + 1);
     if (ids.has(src.id)) {
-      report.diagnostics.push({ code: 'E05', severity: 'error', message: `identifiant « ${src.id} » dupliqué` });
+      report.diagnostics.push({
+        code: 'E05',
+        severity: 'error',
+        message: `identifiant « ${src.id} » dupliqué`,
+      });
     }
     ids.add(src.id);
     return report;
